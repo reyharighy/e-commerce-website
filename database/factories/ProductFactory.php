@@ -20,7 +20,7 @@ class ProductFactory extends Factory
         return [
             'name' => fake()->sentence(nbWords:3),
             'description' => fake()->sentences(2, asText:True),
-            'price' => fake()->numberBetween(0, 100) * 1000,
+            'price' => fake()->numberBetween(50, 100) * 1000,
             'stock' => fake()->numberBetween(0, 50),
         ];
     }

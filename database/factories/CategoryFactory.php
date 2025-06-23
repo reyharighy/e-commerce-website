@@ -28,7 +28,7 @@ class CategoryFactory extends Factory
     public function makeSlug(): static
     {
         return $this->state(fn (array $attributes) => [
-            'slug' => Str::slug($attributes['name']) . '-' . uniqid(),
+            'slug' => Str::slug($attributes['name']),
         ]);
     }
 }
