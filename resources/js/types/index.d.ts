@@ -10,6 +10,8 @@ export interface BreadcrumbItem {
     href: string;
 }
 
+export type BreadcrumbItemType = BreadcrumbItem;
+
 export interface NavItem {
     title: string;
     href: string;
@@ -28,12 +30,83 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
 export interface User {
     id: number;
     name: string;
-    role: string;
+    role: UserRole;
     email: string;
-    avatar?: string;
     email_verified_at: string | null;
+    created_at: string;
+    updated_at: string;
+    
+    orders?: Order[];
+    profile?: Profile | null;
+}
+
+export type UserRole = 'admin' | 'customer';
+
+export interface Order {
+    id: number;
+    user_id: number;
+    invoice_number: string;
+    shipping_address: string;
+    shipping_cost: number;
+    status: OrderStatus;
+    created_at: string;
+    updated_at: string;
+
+    orderDetails: OrderDetail[];
+    payment: Payment;
+}
+
+export type OrderStatus = 'pending' | 'paid' | 'processing' | 'shipped' | 'completed' | 'cancelled';
+
+export interface Profile {
+    id: number;
+    user_id: number;
+    phone_number: string | null;
+    address: string | null;
     created_at: string;
     updated_at: string;
 }
 
-export type BreadcrumbItemType = BreadcrumbItem;
+export interface OrderDetail {
+    id: number;
+    order_id: number;
+    product_id: number;
+    quantity: number;
+    price: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Payment {
+    id: number;
+    order_id: number;
+    amount: number;
+    status: PaymentStatus;
+    created_at: string;
+    updated_at: string;
+}
+
+export type PaymentStatus = 'pending' | 'success' | 'failed';
+
+export interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    created_at: string;
+    updated_at: string;
+
+    products?: Product[];
+}
+
+export interface Product {
+    id: number;
+    category_id: number;
+    name: string;
+    slug: string;
+    description: string | null;
+    price: number;
+    stock: number;
+    image_url: string | null;
+
+    orderDetails?: OrderDetail[];
+}
