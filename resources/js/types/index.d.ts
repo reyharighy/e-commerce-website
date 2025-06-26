@@ -32,7 +32,7 @@ export interface User {
     name: string;
     role: UserRole;
     email: string;
-    email_verified_at: string | null;
+    email_verified_at?: string | null;
     created_at: string;
     updated_at: string;
     
@@ -61,8 +61,9 @@ export type OrderStatus = 'pending' | 'paid' | 'processing' | 'shipped' | 'compl
 export interface Profile {
     id: number;
     user_id: number;
-    phone_number: string | null;
-    address: string | null;
+    phone_number?: string | null;
+    address?: string | null;
+    avatar_url?: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -103,10 +104,10 @@ export interface Product {
     category_id: number;
     name: string;
     slug: string;
-    description: string | null;
+    description?: string | null;
     price: number;
     stock: number;
-    image_url: string | null;
+    image_url?: string | null;
 
     orderDetails?: OrderDetail[];
 }

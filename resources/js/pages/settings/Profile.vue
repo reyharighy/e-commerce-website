@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem, type User } from '@/types';
+import { computed } from 'vue';
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -31,6 +32,26 @@ const user = page.props.auth.user as User;
 const form = useForm({
     name: user.name,
     email: user.email,
+    phone_number: user.profile?.phone_number,
+    address: user.profile?.address,
+});
+
+const phoneNumber = computed({
+    get() {
+        return user.profile ? form.phone_number as string : '';
+    },
+    set(value) {
+        form.phone_number = value;
+    }
+});
+
+const address = computed({
+    get() {
+        return user.profile ? form.address as string : '';
+    },
+    set(value) {
+        form.address = value;
+    }
 });
 
 const submit = () => {
@@ -84,6 +105,20 @@ const submit = () => {
 
                         <div v-if="status === 'verification-link-sent'" class="mt-2 text-sm font-medium text-green-600">
                             A new verification link has been sent to your email address.
+                        </div>
+                    </div>
+
+                    <div v-if="user.role === 'customer'" class="space-y-6">
+                        <div class="grid gap-2">
+                            <Label for="phone_number">Phone number</Label>
+                            <Input id="phone_number" class="mt-1 block w-full" v-model="phoneNumber" placeholder="Phone number" />
+                            <InputError class="mt-2" :message="form.errors.phone_number" />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="address">Address</Label>
+                            <Input id="address" class="mt-1 block w-full" v-model="address" placeholder="Address" />
+                            <InputError class="mt-2" :message="form.errors.address" />
                         </div>
                     </div>
 

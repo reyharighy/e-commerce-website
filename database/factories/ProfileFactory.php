@@ -17,7 +17,23 @@ class ProfileFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'address' => fake()->streetAddress(),
         ];
+    }
+
+    static function indonesianPhoneNumberType(): string {
+        $number = '08';
+
+        for ($i = 0; $i < 10; $i++) {
+            $number .= fake()->numberBetween(0, 9);
+        }
+
+        return $number;
+    }
+
+    public function makePhoneNumber(): static {
+        return $this->state(fn () => [
+            'phone_number' => $this->indonesianPhoneNumberType()
+        ]);
     }
 }

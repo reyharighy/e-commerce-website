@@ -36,6 +36,10 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+        
+        $request->user()->profile->phone_number = $request->phone_number;
+        $request->user()->profile->address = $request->address;
+        $request->user()->profile->save();
 
         return to_route('profile.edit');
     }
