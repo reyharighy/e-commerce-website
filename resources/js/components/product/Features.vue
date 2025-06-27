@@ -28,11 +28,11 @@
 </script>
 
 <template>
-    <Card class="bg-white rounded-lg border mx-4 md:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-gray-200">
+    <Card class="rounded-lg border mx-24 grid grid-cols-1 lg:grid-cols-4 sm:grid-cols-2 lg:divide-x divide-gray-200">
         <div
         v-for="(feature, index) in features"
         :key="index"
-        class="flex items-center gap-4 px-4 py-2">
+        class="flex items-center gap-4 px-4">
         <!-- Icon -->
         <div class="text-2xl text-gray-700">
             <component :is="feature.icon" class="w-6 h-6" />
