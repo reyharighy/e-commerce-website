@@ -1,6 +1,8 @@
 <script setup lang="ts">
     import Card from '../ui/card/Card.vue';
     import CardDescription from '../ui/card/CardDescription.vue';
+import RatingStars from './RatingStars.vue';
+    import TagBadge from './TagBadge.vue';
     
     defineProps({
     product: {
@@ -9,26 +11,16 @@
     },
     });
 
-    // Helper to determine badge style
-    const getTagClass = (tag: string | undefined): string => {
-        if (!tag) return '';
-        if (tag === 'HOT') return 'bg-red-500 text-white';
-        if (tag === 'SALE') return 'bg-green-500 text-white';
-        if (tag.includes('%')) return 'bg-yellow-400 text-black';
-        if (tag === 'BEST DEALS') return 'bg-blue-500 text-white';
-        return '';
-    };
 </script>
 
 <template>
     <Card class="bg-white text-black rounded shadow p-4 relative flex flex-col">
         <!-- Tag Badge -->
-        <div
-            v-if="product.tag"
-            class="absolute top-2 left-2 px-2 py-1 text-xs font-bold rounded z-10"
-            :class="getTagClass(product.tag)">
+        <TagBadge
+            :tag="product.tag"
+            class="absolute top-2 left-2 px-2 py-1 text-xs font-bold rounded z-10">
             {{ product.tag }}
-        </div>
+        </TagBadge>
 
         <!-- Product Image -->
         <div class="w-full h-40 overflow-hidden bg-gray-50">
@@ -38,10 +30,7 @@
         </div>
 
         <!-- Rating -->
-        <p class="text-sm text-orange-500 font-semibold mb-1">
-            {{ '★'.repeat(Math.floor(product.rating)) + '☆'.repeat(5 - Math.floor(product.rating)) }}
-            ({{ product.reviews }})
-        </p>
+        <RatingStars :rating="product.rating"/>
 
         <!-- Title -->
         <CardTitle
