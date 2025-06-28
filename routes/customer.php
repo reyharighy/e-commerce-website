@@ -6,3 +6,7 @@ use Inertia\Inertia;
 Route::get('catalog', function () {
     return Inertia::render('customer/Catalog');
 })->middleware(['auth'])->name('catalog');
+
+Route::get('product-details', function () {
+    return Inertia::render('customer/ProductDetails');
+})->middleware(['auth'])->name('product-details');

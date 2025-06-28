@@ -2,11 +2,11 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import Features from '@/components/product/Features.vue';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import CategoryCard from '@/components/product/CategoryCard.vue';
 import ProductCard from '@/components/product/ProductCard.vue';
 import ProductCategoryCard from '@/components/product/ProductCategoryCard.vue';
+import ServiceFeature from '@/components/product/ServiceFeature.vue';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Catalog',
@@ -211,7 +211,7 @@ const tagcategories = [
             </div>
         </div>
 
-        <Features />
+        <ServiceFeature />
         
         <div class="py-8 w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-24">
             <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Shop with Categories</h1>
