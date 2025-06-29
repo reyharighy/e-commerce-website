@@ -1,3 +1,32 @@
+<script setup lang="ts">
+    import { ref } from 'vue'
+    import { MoveLeft, MoveRight } from 'lucide-vue-next'
+    import { Card } from '@/components/ui/card'
+
+    defineProps<{
+    images: string[]
+    }>()
+
+    const selectedIndex = ref(0)
+    const scrollContainer = ref<HTMLElement | null>(null)
+
+    function selectImage(index: number) {
+    selectedIndex.value = index
+    }
+
+    function scrollLeft() {
+    if (scrollContainer.value) {
+        scrollContainer.value.scrollBy({ left: -100, behavior: 'smooth' })
+    }
+    }
+
+    function scrollRight() {
+    if (scrollContainer.value) {
+        scrollContainer.value.scrollBy({ left: 100, behavior: 'smooth' })
+    }
+    }
+</script>
+
 <template>
     <div class="w-full md:w-1/2 px-4 mb-8">
         <Card class="px-12 rounded-none">
@@ -51,35 +80,6 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-    import { ref } from 'vue'
-    import { MoveLeft, MoveRight } from 'lucide-vue-next'
-    import { Card } from '@/components/ui/card'
-
-    defineProps<{
-    images: string[]
-    }>()
-
-    const selectedIndex = ref(0)
-    const scrollContainer = ref<HTMLElement | null>(null)
-
-    function selectImage(index: number) {
-    selectedIndex.value = index
-    }
-
-    function scrollLeft() {
-    if (scrollContainer.value) {
-        scrollContainer.value.scrollBy({ left: -100, behavior: 'smooth' })
-    }
-    }
-
-    function scrollRight() {
-    if (scrollContainer.value) {
-        scrollContainer.value.scrollBy({ left: 100, behavior: 'smooth' })
-    }
-    }
-</script>
 
 <style scoped>
     .scrollbar-hide::-webkit-scrollbar {

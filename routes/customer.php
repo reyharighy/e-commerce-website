@@ -10,3 +10,7 @@ Route::get('catalog', function () {
 Route::get('product-details', function () {
     return Inertia::render('customer/ProductDetails');
 })->middleware(['auth'])->name('product-details');
+
+Route::get('checkout', function () {
+    return Inertia::render('customer/Checkout');
+})->middleware(['auth'])->name('checkout');

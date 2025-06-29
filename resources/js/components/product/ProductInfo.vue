@@ -4,16 +4,16 @@ import { defineProps } from 'vue'
 import RatingStars from './RatingStars.vue';
 
 defineProps<{
-  rating: number
-  feedbackCount: number
-  title: string
-  sku: string
-  availability: string
-  brand: string
-  category: string
-  price: string
-  oldPrice: string
-  discountTag: string
+    rating: number
+    feedbackCount: number
+    title: string
+    sku: string
+    availability: string
+    brand: string
+    category: string
+    price: string
+    oldPrice: string
+    discountTag: string
 }>()
 
 </script>

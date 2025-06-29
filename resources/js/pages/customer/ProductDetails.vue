@@ -1,25 +1,24 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Award, Truck, Handshake, Headphones, CreditCard } from 'lucide-vue-next';
-import ProductImageGallery from '@/components/product/ProductImageGallery.vue';
-import ProductInfo from '@/components/product/ProductInfo.vue';
-import ProductVariants from '@/components/product/ProductVariants.vue';
-import QuantitySelector from '@/components/product/QuantitySelector.vue';
-import AddToCartButton from '@/components/product/AddToCartButton.vue';
-import BuyNowButton from '@/components/product/BuyNowButton.vue';
-import WishListButton from '@/components/product/WishListButton.vue';
-import PaymentAssurance from '@/components/product/PaymentAssurance.vue';
-import ProductDetailsTabs from '@/components/product/ProductDetailsTabs.vue';
+    import { Head } from '@inertiajs/vue3';
+    import AppLayout from '@/layouts/AppLayout.vue';
+    import { Award, Truck, Handshake, Headphones, CreditCard, ShoppingCart } from 'lucide-vue-next';
+    import ProductImageGallery from '@/components/product/ProductImageGallery.vue';
+    import ProductInfo from '@/components/product/ProductInfo.vue';
+    import ProductVariants from '@/components/product/ProductVariants.vue';
+    import QuantitySelector from '@/components/product/QuantitySelector.vue';
+    import BuyNowButton from '@/components/button/BuyNowButton.vue';
+    import WishListButton from '@/components/button/WishListButton.vue';
+    import PaymentAssurance from '@/components/product/PaymentAssurance.vue';
+    import ProductDetailsTabs from '@/components/product/ProductDetailsTabs.vue';
+    import OrangeButton from '@/components/button/OrangeButton.vue';
 
-const images = [
-  "https://images.unsplash.com/photo-1505751171710-1f6d0ace5a85?ixlib=rb-4.0.3&q=80&w=1080",
-  "https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&q=80&w=1080",
-  "https://images.unsplash.com/photo-1496957961599-e35b69ef5d7c?ixlib=rb-4.0.3&q=80&w=1080",
-  "https://images.unsplash.com/photo-1528148343865-51218c4a13e6?ixlib=rb-4.0.3&q=80&w=1080",
-  "https://images.unsplash.com/photo-1472289065668-ce650ac443d2?ixlib=rb-4.0.3&q=80&w=1080"
-]
-
+    const images = [
+    "https://images.unsplash.com/photo-1505751171710-1f6d0ace5a85?ixlib=rb-4.0.3&q=80&w=1080",
+    "https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&q=80&w=1080",
+    "https://images.unsplash.com/photo-1496957961599-e35b69ef5d7c?ixlib=rb-4.0.3&q=80&w=1080",
+    "https://images.unsplash.com/photo-1528148343865-51218c4a13e6?ixlib=rb-4.0.3&q=80&w=1080",
+    "https://images.unsplash.com/photo-1472289065668-ce650ac443d2?ixlib=rb-4.0.3&q=80&w=1080"
+    ]
 </script>
 
 <template>
@@ -47,7 +46,12 @@ const images = [
                     <ProductVariants/>
                     <div class="flex space-x-4 mb-6 flex-wrap gap-2">
                         <QuantitySelector/>
-                        <AddToCartButton/>
+                        <OrangeButton class="w-1/3 flex items-center justify-center font-bold">
+                            <template #icon>
+                            ADD TO CART
+                            <ShoppingCart />
+                            </template>
+                        </OrangeButton>
                         <BuyNowButton/>
                     </div>
                     <WishListButton/>
