@@ -11,12 +11,14 @@ use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
+    protected $perPage = 5;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = Category::paginate(5);
+        $categories = Category::paginate($this->perPage);
 
         return Inertia::render('admin/CategoriesIndex', [
             'categories' => $categories,
@@ -28,7 +30,12 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return Inertia::render('admin/CategoriesCreate');
+        $totalCategories = Category::count();
+
+        return Inertia::render('admin/CategoriesCreate', [
+            'totalCategories' => $totalCategories,
+            'perPage' => $this->perPage,
+        ]);
     }
 
     /**
