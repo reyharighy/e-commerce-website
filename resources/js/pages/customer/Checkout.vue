@@ -1,42 +1,21 @@
-<template>
-    <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-        <form action="#" class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-            <div class="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12 xl:gap-16">
-                <div class="min-w-0 flex-1 space-y-8">
-                    <BillingForm/>
-                    <Card class="rounded-sm">
-                        <div class="space-y-6 px-6">
-                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Payment Option</h3>
-                            <hr><PaymentMethodSelector/><hr>
-                            <CreditCardForm v-model="creditCard"/>
-                        </div>
-                    </Card>
-                    <OrderNotes v-model="orderNotes" />
-                </div>
-
-                <OrderSummary
-                    :items="orderItems"
-                    :summaryDetails="{
-                        'sub-total': 320,
-                        shipping: 'Free',
-                        discount: 24,
-                        tax: 61.99
-                    }"
-                    :total="357.99"
-                />
-            </div>
-        </form>
-    </section>
-</template>
-
 <script setup lang="ts">
-    import { ref } from 'vue';
-    import BillingForm from '@/components/form/BillingForm.vue';
-    import CreditCardForm from '@/components/form/CreditCardForm.vue';
-    import PaymentMethodSelector from '@/components/form/PaymentMethodSelector.vue';
-    import Card from '@/components/ui/card/Card.vue';
-    import OrderNotes from '@/components/form/OrderNotes.vue';
-    import OrderSummary from '@/components/form/OrderSummary.vue';
+import { ref } from 'vue';
+import BillingForm from '@/components/form/BillingForm.vue';
+import CreditCardForm from '@/components/form/CreditCardForm.vue';
+import PaymentMethodSelector from '@/components/form/PaymentMethodSelector.vue';
+import Card from '@/components/ui/card/Card.vue';
+import OrderNotes from '@/components/form/OrderNotes.vue';
+import OrderSummary from '@/components/form/OrderSummary.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Head } from '@inertiajs/vue3';
+import { type BreadcrumbItem } from '@/types';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Checkout',
+        href: '/checkout',
+    },
+];
 
 const creditCard = ref({
     name: '',
@@ -61,4 +40,41 @@ const orderItems = [
     price: 250,
   },
 ];
+
+const summaryDetails = ref({
+  subtotal: orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+  shipping: 20,
+  tax: 15,
+});
+
+const total = ref(summaryDetails.value.subtotal + summaryDetails.value.shipping + summaryDetails.value.tax);
 </script>
+
+<template>
+    <Head title="Checkout" />
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+            <form action="#" class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+                <div class="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12 xl:gap-16">
+                    <div class="min-w-0 flex-1 space-y-8">
+                        <BillingForm/>
+                        <Card class="rounded-sm">
+                            <div class="space-y-6 px-6">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Payment Option</h3>
+                                <hr><PaymentMethodSelector/><hr>
+                                <CreditCardForm v-model="creditCard"/>
+                            </div>
+                        </Card>
+                        <OrderNotes v-model="orderNotes" />
+                    </div>
+
+                    <OrderSummary
+                        :items="orderItems"
+                        :summaryDetails="summaryDetails"
+                        :total="total"
+                        />
+                </div>
+            </form>
+        </section>
+    </AppLayout>
+</template>

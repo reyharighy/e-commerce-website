@@ -44,7 +44,7 @@
         <BaseInput label="Zip Code" id="zip_code" />
 
         <BaseInput label="Email" id="email" type="email" class="col-span-2" required />
-        <BaseInput label="Phone Number" id="email" type="number" class="col-span-2 [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none" required />
+        <BaseInput label="Phone Number" id="phone" type="number" class="col-span-2 [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none" required />
 
         <div class="col-span-2">
             <input type="checkbox" id="different-address" />

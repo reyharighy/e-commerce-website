@@ -14,3 +14,7 @@ Route::get('product-details', function () {
 Route::get('checkout', function () {
     return Inertia::render('customer/Checkout');
 })->middleware(['auth'])->name('checkout');
+
+Route::get('checkout-success', function () {
+    return Inertia::render('customer/CheckoutSuccess');
+})->middleware(['auth'])->name('checkout-success');

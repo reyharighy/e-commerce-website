@@ -1,11 +1,8 @@
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({});
-</script>
-
 <template>
-  <button class="h-[44px] bg-[#fa8232] flex gap-2 items-center text-white px-12 rounded-sm hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-    <slot name="icon" />
-  </button>
+    <button
+        class="h-[44px] flex items-center justify-center gap-2 bg-[#fa8232] text-white px-6 rounded hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-1 transition-all"
+        >
+        <slot name="icon" />
+        <slot />
+    </button>
 </template>

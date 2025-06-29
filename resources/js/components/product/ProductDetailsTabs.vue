@@ -2,7 +2,7 @@
     import { ref, defineProps } from 'vue'
 
     const props = defineProps<{
-        tabs: string[]
+    tabs: string[]
     }>()
 
     const activeTab = ref(props.tabs[0])
@@ -10,23 +10,25 @@
 
 <template>
     <div class="border rounded shadow-sm bg-white">
-        <div class="flex flex-wrap border-b text-sm font-semibold text-gray-600">
-            <button
-                v-for="tab in tabs"
-                :key="tab"
-                @click="activeTab = tab"
-                class="py-3 px-5 transition-all"
-                :class="{
-                  'text-orange-500 border-b-2 border-orange-500': activeTab === tab,
-                  'hover:text-orange-500': activeTab !== tab
-                }"
-            >
+        <!-- Tabs -->
+        <div class="flex flex-wrap overflow-x-auto border-b text-sm font-semibold text-gray-600">
+        <button
+            v-for="tab in tabs"
+            :key="tab"
+            @click="activeTab = tab"
+            class="py-3 px-5 whitespace-nowrap transition-all duration-200"
+            :class="{
+            'text-[#fa8232] border-b-2 border-[#fa8232]': activeTab === tab,
+            'hover:text-[#fa8232]': activeTab !== tab
+            }"
+        >
             {{ tab }}
-            </button>
+        </button>
         </div>
 
-        <div class="p-4 sm:p-6"> 
-            <slot :active-tab="activeTab" />
+        <!-- Content -->
+        <div class="p-4 sm:p-6">
+        <slot :active-tab="activeTab" />
         </div>
     </div>
 </template>
