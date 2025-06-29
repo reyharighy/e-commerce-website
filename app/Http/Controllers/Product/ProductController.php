@@ -8,6 +8,7 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -40,7 +41,16 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
+        $request->validated();
+
+        Product::create([
+            'category_id' => $request->category_id,
+            'name' => $request->name,
+            'slug' => Str::slug($request->name) . '-' . uniqid(),
+            'description' => $request->description,
+            'price' => $request->price,
+            'stock' => $request->stock,
+        ]);
     }
 
     /**

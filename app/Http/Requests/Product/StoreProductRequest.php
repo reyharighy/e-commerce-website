@@ -23,10 +23,17 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'category_id' => ['required'],
             'name' => ['required', 'string', 'max:255'],
-            'description' => ['string', 'max:255'],
-            'price' => ['required', 'numeric', 'between:0,1_000_000_000_000'],
+            'description' => ['nullable', 'string', 'max:255'],
+            'price' => ['required', 'numeric', 'between:0,1000000000'],
             'stock' => ['required', 'numeric', 'gte:0'],
+        ];
+    }
+
+    public function messages(): array {
+        return [
+            'price.between' => "The price must be between 0 and 1 billion IDR."
         ];
     }
 }
