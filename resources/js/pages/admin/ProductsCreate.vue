@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Category, type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import ProductManagementLayout from '@/layouts/products-management/Layout.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Label } from '@/components/ui/label';
@@ -33,13 +33,23 @@ const breadcrumbs: BreadcrumbItem[] = [
 const productForm = useForm({
     name: undefined,
     description: undefined,
-    category: undefined,
+    category_id: undefined,
     price: undefined,
     stock: undefined,
 });
 
 const submitProductForm = () => {
-
+    productForm.post(route('products.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            if (productForm.recentlySuccessful) {
+                setTimeout(() => {
+                    productForm.reset();
+                    router.get(route('products.index'));
+                }, 1000);
+            }
+        }
+    });
 };
 
 const categoryForm = useForm({
@@ -51,6 +61,10 @@ const submitCategoryForm = () => {
         preserveScroll: true,
         onSuccess: () => categoryForm.reset(),
     });
+};
+
+const initialState = () => {
+    categoryForm.reset();
 };
 </script>
 
@@ -85,7 +99,7 @@ const submitCategoryForm = () => {
                     <div class="grid gap-2">
                         <Label for="category">Category</Label>
                         <div class="flex mt-1 w-full h-full gap-2.5 justify-between items-center">
-                            <SelectRoot v-model="productForm.category">
+                            <SelectRoot id="category" v-model="productForm.category_id" required>
                                 <SelectTrigger
                                     :class="[
                                         'block w-full h-full file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
@@ -95,7 +109,7 @@ const submitCategoryForm = () => {
                                     ]"
                                     aria-label="Category options"
                                 >
-                                    <SelectValue :class="{'text-muted-foreground': !productForm.category}" placeholder="Select category" />
+                                    <SelectValue :class="{'text-muted-foreground': !productForm.category_id}" placeholder="Select category" />
                                     <Icon icon="radix-icons:chevron-down" class="h-full w-3.5 ml-2"/>
                                 </SelectTrigger>
     
@@ -107,17 +121,17 @@ const submitCategoryForm = () => {
                                         <SelectViewport class="p-2">
                                             <SelectGroup>
                                                 <SelectItem
-                                                    v-for="(option, index) in categories"
-                                                    :key="index"
+                                                    v-for="category in categories"
+                                                    :key="category.id"
                                                     class="text-sm leading-none rounded flex items-center h-7 relative select-none data-[disabled]:text-muted data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground"
-                                                    :value="option"
+                                                    :value="category.id"
                                                 >
                                                     <div class="relative flex flex-row items-center">
                                                         <SelectItemIndicator class="absolute pl-2 h-full inline-flex items-center justify-center">
                                                             <Icon icon="radix-icons:check" />
                                                         </SelectItemIndicator>
         
-                                                        <SelectItemText class="pl-8">{{ option.name }}</SelectItemText>
+                                                        <SelectItemText class="pl-8">{{ category.name }}</SelectItemText>
                                                     </div>
                                                 </SelectItem>
                                             </SelectGroup>
@@ -126,7 +140,7 @@ const submitCategoryForm = () => {
                                 </SelectPortal>
                             </SelectRoot>
 
-                            <DialogRoot>
+                            <DialogRoot @update:open="initialState">
                                 <DialogTrigger
                                     :class="[
                                         'block w-fit h-full file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
@@ -181,7 +195,7 @@ const submitCategoryForm = () => {
                                 </DialogPortal>
                             </DialogRoot>
                         </div>
-                        <InputError class="mt-2" :message="productForm.errors.category" />
+                        <InputError class="mt-2" :message="productForm.errors.category_id" />
                     </div>
 
                     <div class="grid gap-2">

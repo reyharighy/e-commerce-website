@@ -81,7 +81,7 @@ const categoryChosen = ref<Category>();
 
 const submit = () => {
     editCategoryForm.patch(route('categories.update', {category: categoryChosen.value}), {
-        preserveScroll: true
+        preserveScroll: true,
     });
 };
 

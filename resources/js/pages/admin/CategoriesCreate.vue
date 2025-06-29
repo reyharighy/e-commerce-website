@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import ProductManagementLayout from '@/layouts/products-management/Layout.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Label } from '@/components/ui/label';
@@ -23,7 +23,14 @@ const form = useForm({
 const submit = () => {
     form.post(route('categories.store'), {
         preserveScroll: true,
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+            if (form.recentlySuccessful) {
+                setTimeout(() => {
+                    form.reset();
+                    router.get(route('categories.index'));
+                }, 1000);
+            }
+        },
     });
 };
 </script>
