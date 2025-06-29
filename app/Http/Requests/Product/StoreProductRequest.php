@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +23,10 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['string', 'max:255'],
+            'price' => ['required', 'numeric', 'between:0,1_000_000_000_000'],
+            'stock' => ['required', 'numeric', 'gte:0'],
         ];
     }
 }

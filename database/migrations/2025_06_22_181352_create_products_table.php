@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->decimal('price', 12, 2);
+            $table->decimal('price', 12, 0)->min(0);
             $table->unsignedBigInteger('stock')->default(0);
-            $table->string('image_url')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
         });
