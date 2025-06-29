@@ -1,10 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Product;
 
-use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Product\StoreCategoryRequest;
+use App\Http\Requests\Product\UpdateCategoryRequest;
 use App\Models\Category;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
@@ -13,7 +16,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $categories = Category::paginate(5);
+
+        return Inertia::render('admin/CategoriesIndex', [
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -21,7 +28,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('admin/CategoriesCreate');
     }
 
     /**
@@ -29,7 +36,14 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        $request->validated();
+
+        $slug = Str::slug($request->name);
+
+        Category::create([
+            'name' => $request->name,
+            'slug' => $slug,
+        ]);
     }
 
     /**
@@ -53,7 +67,14 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        $request->validated();
+
+        $slug = Str::slug($request->name);
+
+        $category->update([
+            'name' => $request->name,
+            'slug' => $slug,
+        ]);
     }
 
     /**
@@ -61,6 +82,20 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->name .= '-' . uniqid() . '-deleted';
+        $category->slug .= '-' . uniqid() . '-deleted';
+        $category->save();
+
+        $category->delete();
+
+        $products = $category->products;
+
+        foreach ($products as $product) {
+            $product->name .= '-' . uniqid() . '-deleted';
+            $product->slug .= '-deleted';
+            $product->save();
+
+            $product->delete();
+        }
     }
 }

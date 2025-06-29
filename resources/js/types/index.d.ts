@@ -36,6 +36,7 @@ export interface User {
     created_at: string;
     updated_at: string;
     
+    // Children
     orders?: Order[];
     profile?: Profile | null;
 }
@@ -52,6 +53,7 @@ export interface Order {
     created_at: string;
     updated_at: string;
 
+    // Children
     orderDetails: OrderDetail[];
     payment: Payment;
 }
@@ -96,6 +98,7 @@ export interface Category {
     created_at: string;
     updated_at: string;
 
+    // Children
     products?: Product[];
 }
 
@@ -107,7 +110,10 @@ export interface Product {
     description?: string | null;
     price: number;
     stock: number;
-    image_url?: string | null;
 
+    // Parent
+    category: Category;
+
+    // Children
     orderDetails?: OrderDetail[];
 }
