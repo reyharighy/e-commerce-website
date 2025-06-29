@@ -8,6 +8,15 @@ defineProps<{
 }>();
 
 const page = usePage();
+
+const isChildrenPath = (parent: string, children: string): boolean => {
+    if (parent.startsWith('/products') && children.startsWith('/categories')) return true;
+    if (parent === children) return true;
+
+    const normalizedParent = parent.endsWith('/') ? parent : parent + '/';
+
+    return children.startsWith(normalizedParent);
+};
 </script>
 
 <template>
@@ -15,7 +24,7 @@ const page = usePage();
         <SidebarGroupLabel>Platform</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton as-child :is-active="item.href === page.url" :tooltip="item.title">
+                <SidebarMenuButton as-child :is-active="isChildrenPath(item.href, page.url)" :tooltip="item.title">
                     <Link :href="item.href">
                         <component :is="item.icon" />
                         <span>{{ item.title }}</span>
