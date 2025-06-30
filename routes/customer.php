@@ -18,3 +18,7 @@ Route::get('checkout', function () {
 Route::get('checkout-success', function () {
     return Inertia::render('customer/CheckoutSuccess');
 })->middleware(['auth'])->name('checkout-success');
+
+Route::get('order-history', function () {
+    return Inertia::render('customer/OrderHistory');
+})->middleware(['auth'])->name('order-history');
