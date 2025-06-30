@@ -11,7 +11,7 @@ const hasHalfStar = computed(() => props.rating % 1 >= 0.5)
     <template v-for="i in 5" :key="i">
       <svg
         v-if="i <= fullStars"
-        class="w-6 h-6 text-orange-500"
+        class="w-6 h-6 text-[#fa8232]"
         fill="currentColor"
         viewBox="0 0 24 24"
       >
@@ -29,7 +29,7 @@ const hasHalfStar = computed(() => props.rating % 1 >= 0.5)
 
       <svg
         v-else-if="i === fullStars + 1 && hasHalfStar"
-        class="w-6 h-6 text-orange-500"
+        class="w-6 h-6 text-[#fa8232]"
         fill="currentColor"
         viewBox="0 0 24 24"
       >

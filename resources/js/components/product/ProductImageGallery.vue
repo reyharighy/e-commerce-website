@@ -1,59 +1,5 @@
-<template>
-    <div class="w-full md:w-1/2 px-4 mb-8">
-        <Card class="px-12 rounded-none">
-        <img
-            :src="images[selectedIndex]"
-            alt="Product"
-            class="w-full h-auto rounded-lg shadow-md mb-4"
-            id="mainImage"
-        />
-        </Card>
-
-        <div class="flex justify-center items-center gap-4 py-4 px-2">
-        <!-- Tombol kiri -->
-        <button
-            @click="scrollLeft"
-            class="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center shadow-md"
-        >
-            <MoveLeft />
-        </button>
-
-        <!-- Container thumbnail -->
-        <div
-            ref="scrollContainer"
-            class="flex gap-4 overflow-x-auto scrollbar-hide overflow-x-hidden"
-        >
-            <Card
-            v-for="(img, index) in images"
-            :key="index"
-            @click="selectImage(index)"
-            class="cursor-pointer flex-shrink-0 size-16 sm:size-20 rounded-md border-2 justify-center"
-            :class="{
-                'border-orange-500': selectedIndex === index,
-                'border-transparent': selectedIndex !== index
-            }"
-            >
-            <img
-                :src="img"
-                :alt="'Thumbnail ' + (index + 1)"
-                class="h-12 mx-auto object-cover rounded hover:opacity-60 transition duration-300"
-            />
-            </Card>
-        </div>
-
-        <!-- Tombol kanan -->
-        <button
-            @click="scrollRight"
-            class="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center shadow-md"
-        >
-            <MoveRight />
-        </button>
-        </div>
-    </div>
-</template>
-
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { ref, onMounted, watch } from 'vue'
     import { MoveLeft, MoveRight } from 'lucide-vue-next'
     import { Card } from '@/components/ui/card'
 
@@ -68,18 +14,96 @@
     selectedIndex.value = index
     }
 
-    function scrollLeft() {
+    function scroll(direction: 'left' | 'right') {
+    const scrollAmount = scrollContainer.value?.clientWidth || 100
     if (scrollContainer.value) {
-        scrollContainer.value.scrollBy({ left: -100, behavior: 'smooth' })
+        scrollContainer.value.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+        })
     }
     }
 
-    function scrollRight() {
-    if (scrollContainer.value) {
-        scrollContainer.value.scrollBy({ left: 100, behavior: 'smooth' })
+    onMounted(() => {
+    scrollToSelected()
+    })
+
+    watch(selectedIndex, () => {
+    scrollToSelected()
+    })
+
+    function scrollToSelected() {
+    const container = scrollContainer.value
+    if (!container) return
+
+    const thumbnails = container.querySelectorAll('.thumbnail')
+    const selected = thumbnails[selectedIndex.value] as HTMLElement | undefined
+
+    if (selected) {
+        const offsetLeft = selected.offsetLeft
+        const containerWidth = container.clientWidth
+        const scrollPos = offsetLeft - containerWidth / 2 + selected.clientWidth / 2
+        container.scrollTo({ left: scrollPos, behavior: 'smooth' })
     }
     }
 </script>
+
+<template>
+    <div class="w-full md:w-1/2 px-4 mb-8">
+        <Card class="px-4 sm:px-12 py-4 rounded-none">
+        <img
+            :src="images[selectedIndex]"
+            alt="Selected Product"
+            class="w-full h-auto rounded-lg shadow-lg transition duration-300"
+            id="mainImage"
+        />
+        </Card>
+
+        <div class="flex justify-center items-center gap-3 py-4">
+        <!-- Tombol kiri -->
+        <button
+        @click="scroll('left')"
+        class="aspect-square w-9 sm:w-10 rounded-full bg-[#fa8232] text-white flex items-center justify-center shadow hover:bg-orange-600 transition"
+        aria-label="Scroll Left"
+        >
+        <MoveLeft class="w-4 h-4" />
+        </button>
+
+        <!-- Thumbnail gallery -->
+        <div
+            ref="scrollContainer"
+            class="flex gap-3 overflow-x-auto scrollbar-hide px-1"
+            tabindex="0"
+        >
+            <Card
+            v-for="(img, index) in images"
+            :key="index"
+            @click="selectImage(index)"
+            class="thumbnail cursor-pointer flex-shrink-0 size-16 sm:size-20 rounded-md border-2 flex items-center justify-center transition duration-200"
+            :class="{
+                'border-orange-500 shadow-md': selectedIndex === index,
+                'border-gray-200 hover:border-orange-300': selectedIndex !== index
+            }"
+            >
+            <img
+                :src="img"
+                :alt="'Thumbnail ' + (index + 1)"
+                class="h-12 w-12 object-cover rounded pointer-events-none"
+            />
+            </Card>
+        </div>
+
+        <!-- Tombol kanan -->
+        <button
+        @click="scroll('right')"
+        class="aspect-square w-9 sm:w-10 rounded-full bg-[#fa8232] text-white flex items-center justify-center shadow hover:bg-orange-600 transition"
+        aria-label="Scroll Right"
+        >
+        <MoveRight class="w-4 h-4" />
+        </button>
+        </div>
+    </div>
+</template>
 
 <style scoped>
     .scrollbar-hide::-webkit-scrollbar {

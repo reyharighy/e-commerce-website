@@ -1,50 +1,53 @@
 <script setup lang="ts">
-import TagBadge from './TagBadge.vue'
-import { defineProps } from 'vue'
-import RatingStars from './RatingStars.vue';
+    import TagBadge from './TagBadge.vue'
+    import RatingStars from './RatingStars.vue'
 
-defineProps<{
-  rating: number
-  feedbackCount: number
-  title: string
-  sku: string
-  availability: string
-  brand: string
-  category: string
-  price: string
-  oldPrice: string
-  discountTag: string
-}>()
-
+    defineProps<{
+    rating: number
+    feedbackCount: number
+    title: string
+    sku: string
+    availability: string
+    brand: string
+    category: string
+    price: string
+    oldPrice: string
+    discountTag: string
+    }>()
 </script>
 
 <template>
-    <div>
-        <div class="flex items-center mb-4">
-            <RatingStars :rating="rating" />
-            <span class="ml-2">{{ rating }} Star Rating</span>
-            <span class="ml-4 text-gray-600">({{ feedbackCount.toLocaleString() }} User feedback)</span>
+    <div class="space-y-4">
+        <!-- Rating Section -->
+        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-700">
+        <RatingStars :rating="rating" />
+        <span class="font-medium">{{ rating.toFixed(1) }} Star Rating</span>
+        <span class="text-gray-500">({{ feedbackCount.toLocaleString() }} Reviews)</span>
         </div>
 
-        <h2 class="text-2xl font-medium mb-2">{{ title }}</h2>
+        <!-- Title -->
+        <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">{{ title }}</h1>
 
-        <div class="grid grid-cols-2 mb-4 gap-4">
-        <p class="text-gray-600">SKU: {{ sku }}</p>
-        <p class="text-gray-600">
+        <!-- Info Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-600">
+        <div>SKU: <span class="font-medium text-gray-800">{{ sku }}</span></div>
+        <div>
             Availability:
-            <span :class="availability === 'In Stock' ? 'text-green-600' : 'text-red-600'">{{ availability }}</span>
-        </p>
-        <p class="text-gray-600">Brand: {{ brand }}</p>
-        <p class="text-gray-600">Category: {{ category }}</p>
+            <span :class="availability === 'In Stock' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'">
+            {{ availability }}
+            </span>
+        </div>
+        <div>Brand: <span class="font-medium text-gray-800">{{ brand }}</span></div>
+        <div>Category: <span class="font-medium text-gray-800">{{ category }}</span></div>
         </div>
 
-        <div class="mb-4">
-        <span class="text-2xl font-bold mr-2">{{ price }}</span>
-        <span class="text-gray-500 line-through">{{ oldPrice }}</span>
-        <span class="ml-4">
-            <TagBadge :tag="discountTag" />
-        </span>
-        <hr class="mt-4" />
+        <!-- Price and Tag -->
+        <div class="flex flex-wrap items-center gap-3 mt-2">
+        <span class="text-2xl font-bold text-[#fa8232]">{{ price }}</span>
+        <span class="line-through text-gray-400 text-lg">{{ oldPrice }}</span>
+        <TagBadge :tag="discountTag" />
         </div>
+
+        <hr class="mt-4 border-gray-200" />
     </div>
 </template>
