@@ -22,3 +22,7 @@ Route::get('checkout-success', function () {
 Route::get('product-filter', function () {
     return Inertia::render('customer/ProductFilter');
 })->middleware(['auth'])->name('product-filter');
+
+Route::get('search-results', function () {
+    return Inertia::render('customer/SearchResults');
+})->middleware(['auth'])->name('search-results');

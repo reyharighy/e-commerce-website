@@ -1,13 +1,23 @@
 <script setup lang="ts">
-    import { MoveRight, Layers } from 'lucide-vue-next';
-    import AppLayout from '@/layouts/AppLayout.vue';
-    import SuccessIcon from '@/components/icon/SuccessIcon.vue';
-    import OrangeOutlineButton from '@/components/button/OrangeOutlineButton.vue';
-    import OrangeButton from '@/components/button/OrangeButton.vue';
+import { MoveRight, Layers } from 'lucide-vue-next';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { type BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/vue3';
+import SuccessIcon from '@/components/icon/SuccessIcon.vue';
+import OrangeOutlineButton from '@/components/button/OrangeOutlineButton.vue';
+import OrangeButton from '@/components/button/OrangeButton.vue';
+
+const breadcrumbs: BreadcrumbItem[] = [
+{
+    title: 'CheckoutSuccess',
+    href: '/checkout-success',
+},
+];
 </script>
 
 <template>
-    <AppLayout>
+    <Head title="CheckoutSuccess"/>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col items-center justify-center text-center space-y-6 py-16">
             <SuccessIcon />
 
