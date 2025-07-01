@@ -11,6 +11,14 @@
     import ProductDetailsTabs from '@/components/product/ProductDetailsTabs.vue';
     import OrangeButton from '@/components/button/OrangeButton.vue';
     import OrangeOutlineButton from '@/components/button/OrangeOutlineButton.vue';
+    import { BreadcrumbItem } from '@/types';
+
+    const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Product Details',
+        href: '/product-details',
+    },
+    ];
 
     const images = [
     "https://images.unsplash.com/photo-1505751171710-1f6d0ace5a85?ixlib=rb-4.0.3&q=80&w=1080",
@@ -23,7 +31,7 @@
 
 <template>
     <Head title="Product Details" />
-    <AppLayout :breadcrumbs="[{ title: 'Product Details', href: '/product-details' }]">
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="container mx-auto px-4 py-8">
             <div class="flex flex-wrap gap-x-8 gap-y-6 mb-8">
                 <ProductImageGallery :images="images" class="basis-full md:basis-1/2"/>
