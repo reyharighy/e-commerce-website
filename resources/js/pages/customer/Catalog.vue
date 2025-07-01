@@ -190,7 +190,7 @@ const tagcategories = [
                     :class="[
                     'px-1 transition',
                     filter === 'All Product'
-                        ? 'font-semibold border-b-2 border-orange-500 text-orange-600'
+                        ? 'font-semibold border-b-2 border-[#fa8232] text-[#fa8232]'
                         : 'hover:underline text-gray-600',
                     ]"
                 >
@@ -200,7 +200,7 @@ const tagcategories = [
 
                 <a
                 href="#"
-                class="text-orange-500 hover:underline text-sm md:text-base whitespace-nowrap"
+                class="text-[#fa8232] hover:underline text-sm md:text-base whitespace-nowrap"
                 >
                 Browse All Product →
                 </a>

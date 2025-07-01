@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
@@ -13,7 +14,7 @@ import { getInitials } from '@/composables/useInitials';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
-import { computed } from 'vue';
+import SearchBar from '@/layouts/product-filter-search/SearchBar.vue';
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
@@ -52,13 +53,15 @@ const rightNavItems: NavItem[] = [
         icon: BookOpen,
     },
 ];
+
+// State untuk mengontrol dropdown search di mobile
+const mobileSearchOpen = ref(false);
 </script>
 
 <template>
     <div>
-        <div class="border-b border-sidebar-border/80">
+        <div class="border-b border-sidebar-border/80 relative">
             <div class="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
-                <!-- Mobile Menu -->
                 <div class="lg:hidden">
                     <Sheet>
                         <SheetTrigger :as-child="true">
@@ -106,7 +109,6 @@ const rightNavItems: NavItem[] = [
                     <AppLogo />
                 </Link>
 
-                <!-- Desktop Menu -->
                 <div class="hidden h-full lg:flex lg:flex-1">
                     <NavigationMenu class="ml-10 flex h-full items-stretch">
                         <NavigationMenuList class="flex h-full items-stretch space-x-2">
@@ -127,31 +129,50 @@ const rightNavItems: NavItem[] = [
                     </NavigationMenu>
                 </div>
 
-                <div class="ml-auto flex items-center space-x-2">
-                    <div class="relative flex items-center space-x-1">
-                        <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">
-                            <Search class="size-5 opacity-80 group-hover:opacity-100" />
-                        </Button>
+                <div class="ml-auto flex items-center space-x-2 md:space-x-4">
+                    <div
+                        class="hidden lg:flex"
+                        >
+                        <SearchBar @search="(val) => { console.log('Search keyword:', val) }" class="mt-4"/>
+                    </div>
 
-                        <div class="hidden space-x-1 lg:flex">
-                            <template v-for="item in rightNavItems" :key="item.title">
-                                <TooltipProvider :delay-duration="0">
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            <Button variant="ghost" size="icon" as-child class="group h-9 w-9 cursor-pointer">
-                                                <a :href="item.href" target="_blank" rel="noopener noreferrer">
-                                                    <span class="sr-only">{{ item.title }}</span>
-                                                    <component :is="item.icon" class="size-5 opacity-80 group-hover:opacity-100" />
-                                                </a>
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{{ item.title }}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </template>
-                        </div>
+                    <div class="hidden items-center space-x-1 lg:flex">
+                        <template v-for="item in rightNavItems" :key="item.title">
+                            <TooltipProvider :delay-duration="0">
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Button variant="ghost" size="icon" as-child class="group h-9 w-9 cursor-pointer">
+                                            <a :href="item.href" target="_blank" rel="noopener noreferrer">
+                                                <span class="sr-only">{{ item.title }}</span>
+                                                <component :is="item.icon" class="size-5 opacity-80 group-hover:opacity-100" />
+                                            </a>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{{ item.title }}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </template>
+                    </div>
+
+                    <div class="lg:hidden">
+                        <DropdownMenu v-model:open="mobileSearchOpen">
+                            <DropdownMenuTrigger as-child>
+                                <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">
+                                    <Search class="size-5 opacity-80 group-hover:opacity-100" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="end"
+                                class="w-[calc(100vw-2rem)] lg:hidden"
+                                :side-offset="16"
+                            >
+                                <div class="p-2">
+                                    <SearchBar @search="(val) => { console.log('Search keyword:', val); mobileSearchOpen = false; }" />
+                                </div>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
 
                     <DropdownMenu>
@@ -175,7 +196,8 @@ const rightNavItems: NavItem[] = [
                     </DropdownMenu>
                 </div>
             </div>
-        </div>
+
+            </div>
 
         <div v-if="props.breadcrumbs.length > 1" class="flex w-full border-b border-sidebar-border/70">
             <div class="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">
@@ -184,3 +206,15 @@ const rightNavItems: NavItem[] = [
         </div>
     </div>
 </template>
+
+<style scoped>
+/* Transisi fade tidak lagi digunakan untuk search, tapi bisa dibiarkan jika ada komponen lain yang memakainya */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>
