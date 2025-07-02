@@ -55,18 +55,20 @@
                     <div class="flex flex-wrap items-center gap-4 mb-6">
                         <QuantitySelector />
 
-                        <OrangeButton class="w-full sm:flex-1 sm:min-w-[160px] hover:shadow-md hover:-translate-y-0.5 transition duration-200">
+                        <OrangeButton class="flex-grow min-w-[180px] hover:shadow-md hover:-translate-y-0.5 transition duration-200 md:background-color">
                             <template #icon>
-                            <ShoppingCart class="w-5 h-5" />
-                            <span class="ml-2 font-bold">Add to Cart</span>
+                                <ShoppingCart class="w-5 h-5" />
+                                <span class="ml-2 font-bold">Add to Cart</span>
                             </template>
                         </OrangeButton>
 
-                        <OrangeOutlineButton class="w-full sm:flex-1 sm:min-w-[160px] hover:shadow-md hover:-translate-y-0.5 transition duration-200">
+                        <OrangeOutlineButton class="flex-grow min-w-[120px] hover:shadow-md hover:-translate-y-0.5 transition duration-200">
                             Buy Now
                         </OrangeOutlineButton>
+                        
+                        <WishListButton />
                     </div>
-                    <WishListButton/>
+
                     <PaymentAssurance/>
                 </div>
             </div>

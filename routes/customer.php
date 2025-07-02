@@ -26,3 +26,7 @@ Route::get('product-filter', function () {
 Route::get('search-results', function () {
     return Inertia::render('customer/SearchResults');
 })->middleware(['auth'])->name('search-results');
+
+Route::get('order-details', function () {
+    return Inertia::render('customer/OrderDetails');
+})->middleware(['auth'])->name('order-details');
