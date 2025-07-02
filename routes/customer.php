@@ -34,3 +34,7 @@ Route::get('order-details', function () {
 Route::get('wishlist', function () {
     return Inertia::render('customer/Wishlist');
 })->middleware(['auth'])->name('wishlist');
+
+Route::get('cart', function () {
+    return Inertia::render('customer/Cart');
+})->middleware(['auth'])->name('cart');
