@@ -30,3 +30,7 @@ Route::get('search-results', function () {
 Route::get('order-details', function () {
     return Inertia::render('customer/OrderDetails');
 })->middleware(['auth'])->name('order-details');
+
+Route::get('wishlist', function () {
+    return Inertia::render('customer/Wishlist');
+})->middleware(['auth'])->name('wishlist');

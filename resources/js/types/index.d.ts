@@ -110,6 +110,8 @@ export interface Product {
     description?: string | null;
     price: number;
     stock: number;
+    image: string;
+    stockStatus: 'in_stock' | 'out_of_stock' | 'low_stock';
 
     // Parent
     category: Category;
