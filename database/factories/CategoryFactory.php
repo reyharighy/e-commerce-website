@@ -25,6 +25,16 @@ class CategoryFactory extends Factory
     }
 
     /**
+     * Create a category from the static.
+     */
+    public function makeName(string $name): static
+    {
+        return $this->state(fn () => [
+            'name' => ucwords($name),
+        ]);
+    }
+
+    /**
      * Create a slug name of the category name for SEO-friendly purpose.
      */
     public function makeSlug(): static

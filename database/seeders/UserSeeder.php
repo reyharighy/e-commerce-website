@@ -25,5 +25,10 @@ class UserSeeder extends Seeder
                 'role' => 'customer',
                 'email' => 'customer@mm.com'
             ]);
+
+        User::factory()
+            ->makeEmail()
+            ->count(10)
+            ->create();
     }
 }

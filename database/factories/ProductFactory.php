@@ -25,7 +25,19 @@ class ProductFactory extends Factory
             'description' => fake()->sentences(2, asText:True),
             'price' => fake()->numberBetween(50, 100) * 1000,
             'discount_percentage' => fake()->numberBetween(0, 50),
+            'rating' => fake()->numberBetween(0, 50) / 10,
+            'review' => fake()->numberBetween(0, 1000),
         ];
+    }
+
+    /**
+     * Create a product from the static.
+     */
+    public function makeName(string $name): static
+    {
+        return $this->state(fn () => [
+            'name' => ucwords($name),
+        ]);
     }
 
     /**

@@ -41,7 +41,7 @@ class ProductVariantSeeder extends Seeder
                         ->makeSlug($product)
                         ->create([
                             'product_id' => $product->id,
-                            'size' => $size,
+                            'size' => $categoryName == 'Hat' ? 'Not Available' : $size,
                             'color' => $color,
                         ]);
                 }

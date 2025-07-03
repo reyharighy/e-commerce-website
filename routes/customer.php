@@ -1,14 +1,27 @@
 <?php
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('catalog', function () {
-    return Inertia::render('customer/Catalog');
+    $products = Product::with(['category', 'productVariants.productImages'])
+        ->whereHas('productVariants', function ($query) {
+            $query->where('stock', '>', 0);
+        })
+        ->orderBy('rating', 'desc')
+        ->orderBy('review', 'desc')
+        ->get();
+
+    return Inertia::render('customer/Catalog', [
+        'products' => $products,
+    ]);
 })->middleware(['auth'])->name('catalog');
 
-Route::get('product-details', function () {
-    return Inertia::render('customer/ProductDetails');
+Route::get('product-details/{product}', function (Product $product) {
+    return Inertia::render('customer/ProductDetails', [
+        'product' => $product->load(['category', 'productVariants.productImages'])
+    ]);
 })->middleware(['auth'])->name('product-details');
 
 Route::get('checkout', function () {

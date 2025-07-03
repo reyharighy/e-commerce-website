@@ -124,6 +124,8 @@ export interface Product {
     description?: string | null;
     price: number;
     discount_percentage: number;
+    rating: number;
+    review: number;
     created_at: string;
     updated_at: string;
     deleted_at: string;
@@ -133,7 +135,7 @@ export interface Product {
 
     // Children
     orderDetails?: OrderDetail[];
-    productVariants?: ProductVariant[];
+    product_variants?: ProductVariant[];
 }
 
 export interface ProductVariant {
@@ -152,7 +154,7 @@ export interface ProductVariant {
     product: Product;
 
     // Children
-    productImages?: ProductImage[];
+    product_images?: ProductImage[];
 }
 
 export interface ProductImage {

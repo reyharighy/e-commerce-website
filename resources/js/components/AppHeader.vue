@@ -130,12 +130,6 @@ const mobileSearchOpen = ref(false);
                 </div>
 
                 <div class="ml-auto flex items-center space-x-2 md:space-x-4">
-                    <div
-                        class="hidden lg:flex"
-                        >
-                        <SearchBar @search="(val) => { console.log('Search keyword:', val) }" class="mt-4"/>
-                    </div>
-
                     <div class="hidden items-center space-x-1 lg:flex">
                         <template v-for="item in rightNavItems" :key="item.title">
                             <TooltipProvider :delay-duration="0">
