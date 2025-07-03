@@ -13,7 +13,6 @@ import {
     SelectContent, SelectGroup, SelectItem, SelectItemIndicator, SelectItemText, SelectPortal, SelectRoot, SelectTrigger, SelectValue, SelectViewport,
 } from 'radix-vue';
 import { capitalize, ref, watch } from 'vue';
-import { CircleAlert, PlusCircle, X } from 'lucide-vue-next';
 import { Card } from '@/components/ui/card';
 
 interface Props {
