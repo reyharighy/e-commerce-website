@@ -43,6 +43,19 @@ export interface User {
 
 export type UserRole = 'admin' | 'customer';
 
+export interface Profile {
+    id: number;
+    user_id: number;
+    phone_number?: string | null;
+    address?: string | null;
+    avatar_url?: string | null;
+    created_at: string;
+    updated_at: string;
+
+    // Parent
+    user?: User;
+}
+
 export interface Order {
     id: number;
     user_id: number;
@@ -53,22 +66,15 @@ export interface Order {
     created_at: string;
     updated_at: string;
 
+    // Parent
+    user: User;
+
     // Children
     orderDetails: OrderDetail[];
     payment: Payment;
 }
 
 export type OrderStatus = 'pending' | 'paid' | 'processing' | 'shipped' | 'completed' | 'cancelled';
-
-export interface Profile {
-    id: number;
-    user_id: number;
-    phone_number?: string | null;
-    address?: string | null;
-    avatar_url?: string | null;
-    created_at: string;
-    updated_at: string;
-}
 
 export interface OrderDetail {
     id: number;
@@ -78,6 +84,10 @@ export interface OrderDetail {
     price: number;
     created_at: string;
     updated_at: string;
+
+    // Parent
+    order: Order;
+    product: Product;
 }
 
 export interface Payment {
@@ -87,6 +97,9 @@ export interface Payment {
     status: PaymentStatus;
     created_at: string;
     updated_at: string;
+
+    // Parent
+    order: Order;
 }
 
 export type PaymentStatus = 'pending' | 'success' | 'failed';
@@ -97,6 +110,7 @@ export interface Category {
     slug: string;
     created_at: string;
     updated_at: string;
+    deleted_at: string;
 
     // Children
     products?: Product[];
@@ -109,13 +123,43 @@ export interface Product {
     slug: string;
     description?: string | null;
     price: number;
-    stock: number;
-    image: string;
-    stockStatus: 'in_stock' | 'out_of_stock' | 'low_stock';
+    discount_percentage: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 
     // Parent
     category: Category;
 
     // Children
     orderDetails?: OrderDetail[];
+    productVariants?: ProductVariant[];
+}
+
+export interface ProductVariant {
+    id: number;
+    product_id: number;
+    sku: string;
+    slug:string;
+    size: string;
+    color:string;
+    stock: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
+
+    // Parent
+    product: Product;
+
+    // Children
+    productImages?: ProductImage[];
+}
+
+export interface ProductImage {
+    id: number;
+    product_variant_id: number;
+    url: string;
+
+    // Parent
+    productVariant: ProductVariant;
 }

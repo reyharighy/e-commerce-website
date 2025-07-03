@@ -12,7 +12,11 @@ import { Button } from '@/components/ui/button';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Product Management',
-        href: '/products',
+        href: route('categories.index'),
+    },
+    {
+        title: 'New Category',
+        href: route('categories.create'),
     },
 ];
 
@@ -41,7 +45,7 @@ const submit = () => {
 
         <ProductManagementLayout>
             <div class="flex flex-col space-y-6">
-                <HeadingSmall title="Create new category" description="Fill out the form below to add a new category to your catalog" />
+                <HeadingSmall title="Create new category" description="Fill out the form below to add a new category to your catalog. Please provide a name for the new category to help organize your product catalog" />
 
                 <form @submit.prevent="submit" class="space-y-6">
                     <div class="grid gap-2">

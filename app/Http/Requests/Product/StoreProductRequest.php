@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
@@ -23,17 +25,26 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => [
+                'required', 'string', 'max:255',
+                Rule::unique('products', 'name')->where(function ($query) {
+                    return $query->where('category_id', $this->category_id);
+                })
+            ],
             'category_id' => ['required'],
-            'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'between:0,1000000000'],
-            'stock' => ['required', 'numeric', 'gte:0'],
+            'discount_percentage' => ['required', 'numeric', 'between:0,99'],
         ];
     }
 
-    public function messages(): array {
+    /**
+     * Customize the error messages prompting if the product with such attributes already exists.
+     */
+    public function messages()
+    {
         return [
-            'price.between' => "The price must be between 0 and 1 billion IDR."
+            'name.unique' => 'A product with name ' . $this->name . ' already exists for category ' . Category::where('id', $this->category_id)->first()->name . '.',
         ];
     }
 }

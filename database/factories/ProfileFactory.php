@@ -21,7 +21,7 @@ class ProfileFactory extends Factory
         ];
     }
 
-    static function indonesianPhoneNumberType(): string {
+    protected static function indonesianPhoneNumberType(): string {
         $number = '08';
 
         for ($i = 0; $i < 10; $i++) {

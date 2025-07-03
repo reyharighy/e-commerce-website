@@ -43,13 +43,15 @@ class ProductController extends Controller
     {
         $request->validated();
 
+        $categoryName = Category::where('id', $request->category_id)->first()->name;
+
         Product::create([
             'category_id' => $request->category_id,
             'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . uniqid(),
+            'slug' => Str::slug($categoryName . '-' . $request->name),
             'description' => $request->description,
             'price' => $request->price,
-            'stock' => $request->stock,
+            'discount_percentage' => $request->discount_percentage,
         ]);
     }
 
@@ -66,7 +68,12 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $categories = Category::all();
+
+        return Inertia::render('admin/ProductsEdit', [
+            'categories' => $categories,
+            'product' => $product,
+        ]);
     }
 
     /**
@@ -74,7 +81,20 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        $request->validated();
+
+        $newSlug = Str::slug($product->category->name . '-' . $request->name);
+
+        $product->update([
+            'category_id' => $request->category_id,
+            'name' => $request->name,
+            'slug' => $newSlug,
+            'description' => $request->description,
+            'price' => $request->price,
+            'discount_percentage' => $request->discount_percentage,
+        ]);
+
+        return to_route('products.edit', ['product' => $product]);
     }
 
     /**
@@ -82,6 +102,13 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $deletionIdentifier = '-' . uniqid() . '-deleted';
+        $product->name .= $deletionIdentifier;
+        $product->slug .= $deletionIdentifier;
+        $product->save();
+
+        $product->delete();
+
+        return to_route('products.index');
     }
 }

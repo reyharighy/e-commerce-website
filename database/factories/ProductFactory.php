@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -17,21 +18,23 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->words(2, asText: true);
+
         return [
-            'name' => fake()->sentence(nbWords:3),
+            'name' => ucwords($name),
             'description' => fake()->sentences(2, asText:True),
             'price' => fake()->numberBetween(50, 100) * 1000,
-            'stock' => fake()->numberBetween(0, 50),
+            'discount_percentage' => fake()->numberBetween(0, 50),
         ];
     }
 
     /**
      * Create a slug name of the category name for SEO-friendly purpose.
      */
-    public function makeSlug(): static
+    public function makeSlug(Category $category): static
     {
         return $this->state(fn (array $attributes) => [
-            'slug' => Str::slug($attributes['name']) . '-' . uniqid(),
+            'slug' => Str::slug($category->name . '-' . $attributes['name']),
         ]);
     }
 }

@@ -21,14 +21,17 @@ class ProductSeeder extends Seeder
             return;
         }
 
-        Product::factory()
-            ->makeSlug()
-            ->count(50)
-            ->make()
-            ->each(function ($product) use ($categories)
-            {
-                $product->category_id = $categories->random()->id;
-                $product->save();
-            });
+        foreach ($categories as $category) {
+            $randomTotal = fake()->numberBetween(0, 10);
+
+            Product::factory()
+                ->makeSlug($category)
+                ->count($randomTotal)
+                ->make()
+                ->each(function ($product) use ($category) {
+                    $product->category_id = $category->id;
+                    $product->save();
+                });
+        }
     }
 }

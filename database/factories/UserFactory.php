@@ -33,8 +33,7 @@ class UserFactory extends Factory
 
     public function makeEmail(): static
     {
-        return $this->state(fn ($attributes) => 
-        [
+        return $this->state(fn ($attributes) => [
             'email' => Str::slug($attributes['name']) . '@email.com'
         ]);
     }
@@ -44,8 +43,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn () => 
-        [
+        return $this->state(fn () => [
             'email_verified_at' => null,
         ]);
     }

@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Category, type BreadcrumbItem } from '@/types';
+import { Category, Product, type BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
-import ProductManagementLayout from '@/layouts/products-management/Layout.vue';
+import ProductLayout from '@/layouts/products-management/VariantLayout.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
-import { Icon } from '@iconify/vue';
+import { Icon } from '@iconify/vue'
 import { Plus } from 'lucide-vue-next';
 import { 
     SelectContent, SelectGroup, SelectItem, SelectItemIndicator, SelectItemText, SelectPortal, SelectRoot, SelectTrigger, SelectValue, SelectViewport,
     DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogRoot, DialogTitle, DialogTrigger,
-    AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger,
 } from 'radix-vue'
 
 interface Props {
-    categories?: Category[];
+    categories: Category[];
+    product: Product;
 };
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
     categories: () => [],
 });
 
@@ -30,27 +30,31 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('products.index'),
     },
     {
-        title: 'New Product',
-        href: route('products.create'),
+        title: props.product.name,
+        href: route('products.variants.index', {product: props.product}),
+    },
+    {
+        title: 'Edit Product',
+        href: route('products.edit', {product: props.product}),
     },
 ];
 
 const productForm = useForm({
-    name: undefined,
-    description: undefined,
-    category_id: undefined,
-    price: undefined,
-    discount_percentage: 0,
+    name: props.product.name,
+    description: props.product.description,
+    category_id: props.product.category_id,
+    price: props.product.price,
+    discount_percentage: props.product.discount_percentage,
 });
 
 const submitProductForm = () => {
-    productForm.post(route('products.store'), {
+    productForm.put(route('products.update', {product: props.product}), {
         preserveScroll: true,
         onSuccess: () => {
             if (productForm.recentlySuccessful) {
                 setTimeout(() => {
                     productForm.reset();
-                    router.get(route('products.index'));
+                    router.get(route('products.variants.index', {product: props.product}));
                 }, 1000);
             }
         }
@@ -75,11 +79,11 @@ const initialState = () => {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Product Management" />
+        <Head :title="product.name" />
 
-        <ProductManagementLayout>
+        <ProductLayout :product="product">
             <div class="flex flex-col space-y-6">
-                <HeadingSmall title="Create new product" description="Fill out the form below to add a new product to your catalog. Make sure to provide accurate details to help customers find and purchase your product" />
+                <HeadingSmall title="Edit product" description="Fill out the form below to edit the product. Make sure to provide accurate details to help customers find and purchase your product" />
 
                 <form @submit.prevent="submitProductForm" class="space-y-6">
                     <div class="grid gap-2">
@@ -213,39 +217,13 @@ const initialState = () => {
                     </div>
 
                     <div class="grid gap-2">
-                        <AccordionRoot 
-                            class="border border-input rounded-md w-fit"
-                            type="single" 
-                            :collapsible="true"
-                        >
-                            <AccordionItem
-                                class="mt-px overflow-hidden first:mt-0 first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-[0_0_0_2px]"
-                                value="item-1"
-                            >
-                                <AccordionHeader class="flex">
-                                    <AccordionTrigger class="text-primary hover:bg-primary-foreground flex justify-evenly w-full cursor-pointer items-center px-5 text-sm leading-none outline-none group h-9">
-                                        <span>Wanna set discount for this product?</span>
-                                        <Icon
-                                            icon="radix-icons:chevron-down"
-                                            class="ml-4 text-primary ease-[cubic-bezier(0.87,_0,_0.13,_1)] transition-transform duration-300 group-data-[state=open]:rotate-180"
-                                            aria-label="Expand/Collapse"
-                                        />
-                                    </AccordionTrigger>
-                                </AccordionHeader>
-
-                                <AccordionContent class="data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden">
-                                    <div class="px-5 py-4">
-                                        <Label for="discount">Discount (%)</Label>
-                                        <Input id="discount" class="mt-3 block w-full" v-model="productForm.discount_percentage" required placeholder="0" />
-                                        <InputError class="mt-2" :message="productForm.errors.discount_percentage" />
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </AccordionRoot>
+                        <Label for="discount">Discount (%)</Label>
+                        <Input id="discount" class="mt-1 block w-full" v-model="productForm.discount_percentage" required placeholder="0" />
+                        <InputError class="mt-2" :message="productForm.errors.discount_percentage" />
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button class="cursor-pointer" :disabled="productForm.processing">Create</Button>
+                        <Button class="cursor-pointer" :disabled="productForm.processing">Edit</Button>
 
                         <Transition
                             enter-active-class="transition ease-in-out"
@@ -253,11 +231,11 @@ const initialState = () => {
                             leave-active-class="transition ease-in-out"
                             leave-to-class="opacity-0"
                         >
-                            <p v-show="productForm.recentlySuccessful" class="text-sm text-neutral-600">Created.</p>
+                            <p v-show="productForm.recentlySuccessful" class="text-sm text-neutral-600">Edited.</p>
                         </Transition>
                     </div>
                 </form>
             </div>
-        </ProductManagementLayout>
+        </ProductLayout>
     </AppLayout>
 </template>

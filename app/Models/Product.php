@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -25,7 +26,7 @@ class Product extends Model
         'slug',
         'description',
         'price',
-        'stock',
+        'discount_percentage',
     ];
 
     /**
@@ -52,5 +53,64 @@ class Product extends Model
     public function orderDetails(): HasMany
     {
         return $this->hasMany(OrderDetail::class);
+    }
+
+    /**
+     * Get all variants of the product.
+     */
+    public function productVariants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    /**
+     * Use the product's slug for the route model binding.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
+     * Soft delete the product after its category is deleted.
+     * Do some slug modification as deleted record identification.
+     */
+    public function softDeletesWithSlugModification()
+    {
+        $deletionIdentifier = '-' . uniqid() . '-deleted';
+        $this->name .= $deletionIdentifier;
+        $this->slug .= $deletionIdentifier;
+        $this->save();
+
+        $this->delete();
+    }
+
+    /**
+     * Update the product slug after its category is updated.
+     * Do some slug modification to maintain the schema integrity.
+     */
+    public function updatesWithSlugModification()
+    {   
+        $this->update([
+            'slug' => Str::slug($this->category->name . '-' . $this->name),
+        ]);
+    }
+
+    /**
+     * Automatically update or delete all variants that belong to the product.
+     */
+    protected static function booted()
+    {
+        static::updated(function ($product) {
+            $product->productVariants->each(function ($productVariant) {
+                $productVariant->updatesWithSlugModification();
+            });
+        });
+        
+        static::deleting(function ($product) {
+            $product->productVariants->each(function ($productVariant) {
+                $productVariant->softDeletesWithSlugModification();
+            });
+        });
     }
 }

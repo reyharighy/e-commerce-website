@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { NavItem, Product } from '@/types';
+import { usePage, Link } from '@inertiajs/vue3';
 import { HTMLAttributes } from 'vue';
+import Separator from '@/components/ui/separator/Separator.vue';
 
 interface Props {
     class?: HTMLAttributes['class'];
+    product: Product;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -16,23 +17,12 @@ const props = withDefaults(defineProps<Props>(), {
 
 const productNavItems: NavItem[] = [
     {
-        title: 'Product',
-        href: route('products.index'),
+        title: 'Variant',
+        href: route('products.variants.index', {product: props.product}),
     },
     {
-        title: 'New product',
-        href: route('products.create'),
-    },
-];
-
-const categoryNavItems: NavItem[] = [
-    {
-        title: 'Category',
-        href: route('categories.index'),
-    },
-    {
-        title: 'New category',
-        href: route('categories.create'),
+        title: 'New variant',
+        href: route('products.variants.create', {product: props.product}),
     },
 ];
 
@@ -43,7 +33,7 @@ const currentPath = page.props.ziggy?.location;
 
 <template>
     <div class="px-4 py-6">
-        <Heading title="Product Management" description="Manage all of your products in one place" />
+        <Heading title="Variant Management" description="Manage the product and its variants in one place" />
 
         <div class="flex flex-col space-y-8 md:space-y-0 lg:flex-row lg:space-y-0 lg:space-x-12">
             <aside class="w-full max-w-xl h-fit lg:w-48">
@@ -52,25 +42,11 @@ const currentPath = page.props.ziggy?.location;
                         v-for="item in productNavItems"
                         :key="item.href"
                         variant="ghost"
-                        :class="['w-full justify-start', { 'bg-muted': currentPath === item.href }]"
+                        :class="['w-full justify-start', { 'bg-muted': currentPath === item.href || (currentPath.endsWith('/edit') && item.href.endsWith('/variants')) }]"
                         as-child
                     >
                         <Link :href="item.href">
-                            {{ item.title }}
-                        </Link>
-                    </Button>
-                    
-                    <Separator class="my-2" />
-
-                    <Button
-                        v-for="item in categoryNavItems"
-                        :key="item.href"
-                        variant="ghost"
-                        :class="['w-full justify-start', { 'bg-muted': currentPath === item.href }]"
-                        as-child
-                    >
-                        <Link :href="item.href">
-                            {{ item.title }}
+                            {{ item.title }} 
                         </Link>
                     </Button>
                 </nav>

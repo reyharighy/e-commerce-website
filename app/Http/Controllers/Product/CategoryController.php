@@ -69,11 +69,11 @@ class CategoryController extends Controller
     {
         $request->validated();
 
-        $slug = Str::slug($request->name);
+        $newName = $request->name;
 
         $category->update([
-            'name' => $request->name,
-            'slug' => $slug,
+            'name' => $newName,
+            'slug' => Str::slug($newName),
         ]);
     }
 
@@ -82,20 +82,11 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $category->name .= '-' . uniqid() . '-deleted';
-        $category->slug .= '-' . uniqid() . '-deleted';
+        $deletionIdentifier = '-' . uniqid() . '-deleted';
+        $category->name .= $deletionIdentifier;
+        $category->slug .= $deletionIdentifier;
         $category->save();
 
         $category->delete();
-
-        $products = $category->products;
-
-        foreach ($products as $product) {
-            $product->name .= '-' . uniqid() . '-deleted';
-            $product->slug .= '-deleted';
-            $product->save();
-
-            $product->delete();
-        }
     }
 }

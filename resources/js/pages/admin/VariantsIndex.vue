@@ -1,27 +1,16 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Category, type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3';
-import ProductManagementLayout from '@/layouts/products-management/Layout.vue';
+import { type BreadcrumbItem, Product, ProductVariant } from '@/types';
+import VariantLayout from '@/layouts/products-management/VariantLayout.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
 import HeadingSmall from '@/components/HeadingSmall.vue';
-import { ChevronLeftIcon, ChevronRightIcon, Trash, SquarePen } from 'lucide-vue-next';
-import { Input } from '@/components/ui/input';
-import InputError from '@/components/InputError.vue';
+import { SquarePen, Trash, ChevronLeftIcon, ChevronRightIcon } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/vue';
 import {
     DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogRoot, DialogTitle, DialogTrigger,
 } from 'radix-vue';
-import { ref, watch } from 'vue';
-import { router } from '@inertiajs/vue3';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Product Management',
-        href: route('categories.index'),
-    },
-];
+import { capitalize } from 'vue';
 
 interface Links {
     url: string;
@@ -29,7 +18,8 @@ interface Links {
 }
 
 interface Props {
-    categories?: {
+    product: Product;
+    productVariants?: {
         total: number;
         per_page: number;
         current_page: number;
@@ -41,12 +31,12 @@ interface Props {
         from: number;
         to: number;
         links: Links[];
-        data: Category[];
+        data: ProductVariant[];
     };
 };
 
-withDefaults(defineProps<Props>(), {
-    categories: () => ({
+const props = withDefaults(defineProps<Props>(), {
+    productVariants: () => ({
         total: 0,
         per_page: 0,
         current_page: 1,
@@ -63,139 +53,76 @@ withDefaults(defineProps<Props>(), {
     })
 });
 
-const prettyDate = (date: string) => {
-    let dateObj = new Date(date);
-    return new Intl.DateTimeFormat('en-US', { dateStyle: 'full', timeStyle: 'short' }).format(dateObj)
-}
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Product Management',
+        href: route('products.index'),
+    },
+    {
+        title: props.product.name,
+        href: route('products.variants.index', {product: props.product}),
+    },
+];
 
-const updateDate = (createdDate: string, updatedDate: string): string | Date => {
-    if (createdDate === updatedDate) return 'Never been updated.';
-    
-    return prettyDate(updatedDate);
-}
+const priceFormat = (value: number): string => {
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
 
-const editCategoryForm = useForm({
-    name: '',
-});
+const currentPrice = (initialPrice: number, discountPercentage: number): number => {
+    return initialPrice * (100 - discountPercentage)/100;
+};
 
-const categoryChosen = ref<Category>();
-
-const submit = () => {
-    editCategoryForm.put(route('categories.update', {category: categoryChosen.value}), {
+const deleteProduct = (product: Product) => {
+    router.delete(route('products.destroy', {product: product}), {
         preserveScroll: true,
     });
 };
 
-watch(categoryChosen, (newValue) => {
-    editCategoryForm.name = newValue?.name ?? '';
-});
-
-const setCategoryChosen = (category: Category) => {
-    categoryChosen.value = category;
-};
-
-const doubleLock = ref<boolean>(false);
-
-watch(editCategoryForm, () => {
-    if (editCategoryForm.recentlySuccessful) {
-        doubleLock.value = true;
-    }
-}, {immediate: true});
-
-const initialState = () => {
-    editCategoryForm.name = categoryChosen.value?.name ?? '';
-    editCategoryForm.errors.name = undefined;
-    doubleLock.value = false;
-};
-
-const deleteCategory = (category: Category) => {
-    router.delete(route('categories.destroy', {category: category}), {
+const deleteVariant = (product: Product, variant: ProductVariant) => {
+    router.delete(route('products.variants.destroy', {product: product, variant: variant}), {
         preserveScroll: true,
-        onSuccess: () => {
-            router.get('')
-        }
     });
 };
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Product Management" />
+        <Head :title="product.name" />
 
-        <ProductManagementLayout class="w-full">
+        <VariantLayout class="w-full" :product="product">
             <div class="flex flex-col space-y-6">
-                <HeadingSmall title="List of categories" description="Browse and manage your product category efficiently. Use the search and filter options to quickly find specific categories" />
+                <HeadingSmall title="Product and list of variants" description="Browse and manage the product and its variants efficiently. Use the search and filter options to quickly find specific variants" />
 
                 <div class="relative max-h-fit flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border space-y-6 p-5">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-primary-foreground">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Name</th>
-                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Created</th>
-                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Last Updated</th>
+                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Category</th>
+                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Initial Price (IDR)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Current Price (IDR)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Discount (%)</th>
                                 <th scope="col" class="relative px-6 py-3"><span class="sr-only">Edit</span></th>
                                 <th scope="col" class="relative px-6 py-3"><span class="sr-only">Delete</span></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
-                            <tr v-for="category in categories.data" :key="category.id" class="hover:bg-primary-foreground">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary">{{ category.name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{{ prettyDate(category.created_at) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{{ updateDate(category.created_at, category.updated_at) }}</td>
+                            <tr class="hover:bg-primary-foreground">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary">{{ product.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{{ product.category?.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{{ priceFormat(product.price) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{{ priceFormat(currentPrice(product.price, product.discount_percentage)) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{{ product.discount_percentage }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <DialogRoot @update:open="initialState">
-                                        <DialogTrigger @click="setCategoryChosen(category)">
-                                            <Button variant="ghost" class="hover:cursor-pointer hover:bg-blue-100 bg-muted">
-                                                <SquarePen class="w-3.5 h-3.5" />
-                                            </Button>
-                                        </DialogTrigger>
-
-                                        <DialogPortal>
-                                            <DialogOverlay class="bg-gray-500/50 fixed inset-0 z-30" />
-                                            <DialogContent
-                                                class="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none z-[100]"
-                                            >
-                                                <DialogTitle class="text-primary m-0 text-lg font-semibold">
-                                                    Edit category
-                                                </DialogTitle>
-                                                
-                                                <DialogDescription class="text-primary mt-2.5 mb-5 text-sm">
-                                                    Please make sure the new category name should be unique. Updating name will also cause the SKU of all descendent variants to be updated.
-                                                </DialogDescription>
-
-                                                <form @submit.prevent="submit" class="flex flex-col items-end space-y-6">
-                                                    <div class="grid gap-2 w-full">
-                                                        <Input id="category" class="mt-1 block w-full" v-model="editCategoryForm.name" required :disabled="doubleLock" placeholder="Category name" />
-                                                        <InputError class="mt-2" :message="editCategoryForm.errors.name" />
-                                                    </div>
-            
-                                                    <div class="flex items-center gap-4">
-                                                        <Transition
-                                                            enter-active-class="transition ease-in-out"
-                                                            enter-from-class="opacity-0"
-                                                            leave-active-class="transition ease-in-out"
-                                                            leave-to-class="opacity-0"
-                                                        >
-                                                            <p v-show="editCategoryForm.recentlySuccessful" class="text-sm text-neutral-600">Edited.</p>
-                                                        </Transition>
-
-                                                        <Button class="cursor-pointer" :disabled="editCategoryForm.processing" :hidden="doubleLock">Edit</Button>
-                                                    </div>
-                                                </form>
-                                                
-                                                <DialogClose
-                                                    class="text-primary hover:bg-gray-100 focus:shadow-green7 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none cursor-pointer"
-                                                    aria-label="Close"
-                                                >
-                                                    <Icon icon="lucide:x" />
-                                                </DialogClose>
-                                            </DialogContent>
-                                        </DialogPortal>
-                                    </DialogRoot>
+                                    <Link :href="route('products.edit', {product: product})">
+                                        <Button variant="ghost" class="hover:cursor-pointer hover:bg-blue-100 bg-muted">
+                                            <SquarePen class="w-3.5 h-3.5"/>
+                                        </Button>
+                                    </Link>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <DialogRoot @update:open="initialState">
-                                        <DialogTrigger @click="setCategoryChosen(category)">
+                                    <DialogRoot>
+                                        <DialogTrigger>
                                             <Button variant="ghost" class="hover:cursor-pointer hover:bg-red-100 bg-muted">
                                                 <Trash class="w-3.5 h-3.5" />
                                             </Button>
@@ -207,20 +134,20 @@ const deleteCategory = (category: Category) => {
                                                 class="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none z-[100]"
                                             >
                                                 <DialogTitle class="text-primary m-0 text-lg font-semibold">
-                                                    Delete category
+                                                    Delete product
                                                 </DialogTitle>
                                                 
                                                 <DialogDescription class="text-primary mt-2.5 mb-5 text-sm flex flex-col gap-3">
                                                     <p>
-                                                        Deleting a category will also remove any associated products and their variants, effectively deleting them as well.
+                                                        Deleting a product will also remove any associated variants, effectively deleting them as well.
                                                     </p>
                                                     <p>
-                                                        Are you sure want to delete this category?
+                                                        Are you sure want to delete this product?
                                                     </p>
                                                 </DialogDescription>
 
                                                 <div class="grid gap-2 w-full mb-7 font-semibold text-center py-1 px-3 rounded-lg border border-primary-foreground bg-primary-foreground">
-                                                    &quot;{{ category.name }}&quot;
+                                                    &quot;{{ product.name }}&quot;
                                                 </div>
 
                                                 <div class="flex gap-2 w-full justify-end">
@@ -229,7 +156,82 @@ const deleteCategory = (category: Category) => {
                                                     </DialogClose>
 
                                                     <DialogClose aria-label="Yes">
-                                                        <Button @click="deleteCategory(category)" variant="destructive" class="cursor-pointer">Delete</Button>
+                                                        <Button @click="deleteProduct(product)" variant="destructive" class="cursor-pointer">Delete</Button>
+                                                    </DialogClose>
+                                                </div>
+                                                
+                                                <DialogClose
+                                                    class="text-primary hover:bg-gray-100 focus:shadow-green7 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none cursor-pointer"
+                                                    aria-label="Close"
+                                                >
+                                                    <Icon icon="lucide:x" />
+                                                </DialogClose>
+                                            </DialogContent>
+                                        </DialogPortal>
+                                    </DialogRoot>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table v-if="productVariants.data" class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-primary-foreground">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">SKU</th>
+                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Size</th>
+                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Color</th>
+                                <th scope="col" class="px-6 py-3 text-left text-sm font-bold text-primary uppercase tracking-wider">Stock</th>
+                                <th scope="col" class="relative px-6 py-3"><span class="sr-only">Edit</span></th>
+                                <th scope="col" class="relative px-6 py-3"><span class="sr-only">Delete</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr v-for="variant in productVariants.data" class="hover:bg-primary-foreground">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary">{{ variant.sku }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{{ variant.size }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{{ capitalize(variant.color) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">{{ variant.stock }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <Link :href="route('products.variants.edit', {product: product, variant: variant})">
+                                        <Button variant="ghost" class="hover:cursor-pointer hover:bg-blue-100 bg-muted">
+                                            <SquarePen class="w-3.5 h-3.5"/>
+                                        </Button>
+                                    </Link>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <DialogRoot>
+                                        <DialogTrigger>
+                                            <Button variant="ghost" class="hover:cursor-pointer hover:bg-red-100 bg-muted">
+                                                <Trash class="w-3.5 h-3.5" />
+                                            </Button>
+                                        </DialogTrigger>
+
+                                        <DialogPortal>
+                                            <DialogOverlay class="bg-gray-500/50 fixed inset-0 z-30" />
+                                            <DialogContent
+                                                class="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none z-[100]"
+                                            >
+                                                <DialogTitle class="text-primary m-0 text-lg font-semibold">
+                                                    Delete variant
+                                                </DialogTitle>
+                                                
+                                                <DialogDescription class="text-primary mt-2.5 mb-5 text-sm flex flex-col gap-3">
+                                                    <p>
+                                                        Are you sure want to delete this variant?
+                                                    </p>
+                                                </DialogDescription>
+
+                                                <div class="grid gap-2 w-full mb-7 font-semibold text-center py-1 px-3 rounded-lg border border-primary-foreground bg-primary-foreground">
+                                                    &quot;{{ variant.sku }}&quot;
+                                                </div>
+
+                                                <div class="flex gap-2 w-full justify-end">
+                                                    <DialogClose aria-label="No">
+                                                        <Button class="cursor-pointer">No</Button>
+                                                    </DialogClose>
+
+                                                    <DialogClose aria-label="Yes">
+                                                        <Button @click="deleteVariant(product, variant)" variant="destructive" class="cursor-pointer">Delete</Button>
                                                     </DialogClose>
                                                 </div>
                                                 
@@ -249,29 +251,29 @@ const deleteCategory = (category: Category) => {
                 </div>
 
                 <div class="absolute right-0 bottom-0 w-full flex items-center justify-between border-t border-gray-200 px-4 py-4 sm:px-6">
-                    <div class="sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                         <p class="text-sm text-primary">
-                            Showing 
+                            Showing
                             &VeryThinSpace;
-                            <span class="font-medium">{{ categories.from }}</span>
+                            <span class="font-medium">{{ productVariants.from }}</span>
                             &VeryThinSpace;
                             to
                             &VeryThinSpace;
-                            <span class="font-medium">{{ categories.to }}</span>
+                            <span class="font-medium">{{ productVariants.to }}</span>
                             &VeryThinSpace;
                             of
                             &VeryThinSpace;
-                            <span class="font-medium">{{ categories.total }}</span>
+                            <span class="font-medium">{{ productVariants.total }}</span>
                             &VeryThinSpace;
                             results
                         </p>
 
                         <nav class="isolate inline-flex -space-x-px rounded-md shadow-xs" aria-label="Pagination">
-                            <div v-for="link in categories.links">
+                            <div v-for="link in productVariants.links">
                                 <Link v-if="link.label !== '...'" :href="link.url ?? '#'" aria-current="page" :preserve-scroll="true"
                                     :class="{
-                                        'relative z-10 inline-flex items-center bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 pointer-events-none': link.label == categories.current_page,
-                                        'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-primary ring-1 ring-gray-300 ring-inset hover:bg-primary hover:text-primary-foreground focus:z-20 focus:outline-offset-0' : link.label != categories.current_page,
+                                        'relative z-10 inline-flex items-center bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 pointer-events-none': link.label == productVariants.current_page,
+                                        'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-primary ring-1 ring-gray-300 ring-inset hover:bg-primary hover:text-primary-foreground focus:z-20 focus:outline-offset-0' : link.label != productVariants.current_page,
                                         'hover:pointer-events-none cursor-none text-transparent' : !link.url
                                     }"
                                 >
@@ -294,6 +296,6 @@ const deleteCategory = (category: Category) => {
                     </div>
                 </div>
             </div>
-        </ProductManagementLayout>
+        </VariantLayout>
     </AppLayout>
 </template>

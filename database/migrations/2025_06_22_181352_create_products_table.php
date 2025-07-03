@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->decimal('price', 10, 0)->min(0);
-            $table->unsignedBigInteger('stock')->default(0);
+            $table->decimal('price', 10, 0)->min(0)->max(1000000000);
+            $table->decimal('discount_percentage', 2, 0)->min(0)->max(99)->default(0);
             $table->timestamps();
             $table->softDeletes();
 

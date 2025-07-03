@@ -29,4 +29,30 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    /**
+     * Use the category's slug for routes model binding.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
+     * Automatically update or delete all products that belong to the category.
+     */
+    protected static function booted()
+    {
+        static::updated(function ($category) {
+            $category->products->each(function ($product) {
+                $product->updatesWithSlugModification();
+            });
+        });
+        
+        static::deleting(function ($category) {
+            $category->products->each(function ($product) {
+                $product->softDeletesWithSlugModification();
+            });
+        });
+    }
 }
