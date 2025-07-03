@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('product_variant_id');
             $table->string('url');
             $table->timestamps();
-            $table->softDeletes();
 
             $table->foreign('product_variant_id')->references('id')->on('product_variants')->onDelete('cascade')->onUpdate('cascade');
         });

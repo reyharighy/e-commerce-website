@@ -184,7 +184,7 @@ const removeImage = (index: number) => {
         <VariantLayout :product="product" class="w-full">
             <div class="flex gap-10">
                 <div class="flex flex-col space-y-6 w-full">
-                    <HeadingSmall title="Create new variant" description="Fill out the form below to add a new variant to your catalog. Make sure to provide accurate details to help customers find and purchase your product" class="w-1/2" />
+                    <HeadingSmall title="Create new variant" description="Fill out the form below to add a new variant to your catalog. Make sure to provide accurate details to help customers find and purchase your product" class="w-1/2 pr-10" />
 
                     <div class="flex w-full space-x-10">
                         <form @submit.prevent="submitVariantForm" class="space-y-6 w-1/2">

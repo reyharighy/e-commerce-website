@@ -12,8 +12,8 @@ import { Icon } from '@iconify/vue';
 import {
     SelectContent, SelectGroup, SelectItem, SelectItemIndicator, SelectItemText, SelectPortal, SelectRoot, SelectTrigger, SelectValue, SelectViewport,
 } from 'radix-vue';
-import { capitalize, onBeforeMount, onMounted, ref, watch } from 'vue';
-import { PlusCircle, RotateCcw } from 'lucide-vue-next';
+import { capitalize, ref, watch } from 'vue';
+import { CircleAlert, PlusCircle, X } from 'lucide-vue-next';
 import { Card } from '@/components/ui/card';
 
 interface Props {
@@ -45,8 +45,8 @@ const getColorCode = (color: string): string => {
     return 'bg-' + color + '-500';
 };
 
-const sizeValue = ref<string>(props.variant.size);
-const colorValue = ref<string>(props.variant.color);
+const sizeValue = ref<string | null>(null);
+const colorValue = ref<string | null>(null);
 
 const getInitials = (product: Product) => {
     let categoryName = product.category.name.split(' ').map((word) => {
@@ -73,15 +73,30 @@ const getInitials = (product: Product) => {
 };
 
 const variantForm = useForm({
-    sku: getInitials(props.product),
+    sku: props.variant.sku,
     size: props.variant.size,
     color: props.variant.color,
     stock: props.variant.stock,
-    images: [{}],
+});
+
+const images = ref<{
+    name: string;
+    file: object;
+    url: string;
+    invalid: boolean;
+}[]>([]);
+
+props.images.forEach(image => {
+    images.value.push({
+        name: image.url.split('/')[1],
+        file: image,
+        url: image.url,
+        invalid: false,
+    });
 });
 
 watch(variantForm, (newValue) => {
-    sizeValue.value = newValue.size;
+    sizeValue.value = newValue.size ?? null;
     colorValue.value = newValue.color ?? null;
 }, {immediate: true});
 
@@ -89,23 +104,8 @@ watch([sizeValue, colorValue], () => {
     variantForm.sku = getInitials(props.product);
 }, {immediate: true});
 
-const isImageError = ref<boolean>(false);
-
-watch(variantForm, (newValue) => {
-    isImageError.value = false;
-
-    for (const key in newValue.errors) {
-        console.log(key.startsWith('images'));
-        if (key.startsWith('images.')) {
-            isImageError.value = true;
-            break;
-        };
-    }
-}, {immediate: true});
-
 const submitVariantForm = () => {
-    variantForm.post(route('products.variants.store', {product: props.product}), {
-        forceFormData: true,
+    variantForm.put(route('products.variants.update', {product: props.product, variant: props.variant}), {
         preserveScroll: true,
         onSuccess: () => {
             if (variantForm.recentlySuccessful) {
@@ -114,44 +114,14 @@ const submitVariantForm = () => {
                     router.get(route('products.variants.index', {product: props.product}));
                 }, 1000);
             }
-        },
+        }
     });
 };
-
-const images = ref<{
-    name: string;
-    file: object;
-    url: string;
-}[]>([]);
 
 const selectedIndex = ref<number>(0);
 
 const selectImage = (index: number) => {
     selectedIndex.value = index;
-};
-
-const onFileChange = (event: Event) => {
-    const files = (event.target as HTMLInputElement).files;
-    if (!files) return;
-
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const url = URL.createObjectURL(file);
-
-        if (images.value.length <= 4) {
-            images.value.push({name: file.name, file, url});
-        }
-    }
-
-    variantForm.images = Array.from(images.value.map((image) => {
-        return image.file;
-    }));
-}
-
-const reload = (event: Event) => {
-    images.value = [];
-    variantForm.images = Array.from(images.value);
-    onFileChange(event);
 };
 </script>
 
@@ -182,7 +152,7 @@ const reload = (event: Event) => {
         <VariantLayout :product="product" class="w-full">
             <div class="flex gap-10">
                 <div class="flex flex-col space-y-6 w-full">
-                    <HeadingSmall title="Create new variant" description="Fill out the form below to add a new variant to your catalog. Make sure to provide accurate details to help customers find and purchase your product" class="w-1/2" />
+                    <HeadingSmall title="Edit variant" description="Fill out the form below to edit the variant. Make sure to provide accurate details to help customers find and purchase your product" class="w-1/2 pr-10" />
 
                     <div class="flex w-full space-x-10">
                         <form @submit.prevent="submitVariantForm" class="space-y-6 w-1/2">
@@ -294,7 +264,7 @@ const reload = (event: Event) => {
                             </div>
         
                             <div class="flex items-center gap-4">
-                                <Button class="cursor-pointer" :disabled="variantForm.processing">Create</Button>
+                                <Button class="cursor-pointer" :disabled="variantForm.processing">Edit</Button>
         
                                 <Transition
                                     enter-active-class="transition ease-in-out"
@@ -302,7 +272,7 @@ const reload = (event: Event) => {
                                     leave-active-class="transition ease-in-out"
                                     leave-to-class="opacity-0"
                                 >
-                                    <p v-show="variantForm.recentlySuccessful" class="text-sm text-neutral-600">Created.</p>
+                                    <p v-show="variantForm.recentlySuccessful" class="text-sm text-neutral-600">Edited.</p>
                                 </Transition>
                             </div>
                         </form>
@@ -310,50 +280,46 @@ const reload = (event: Event) => {
                         <div class="flex flex-col w-1/2 gap-2 mr-10">
                             <Label for="images">Images</Label>
                             <HeadingSmall title="" description="No more than 5 images can be linked to each variant. Only accepts JPG, JPEG, and PNG types." />
-                            <InputError v-show="isImageError" class="mt-2" message="At least one uploaded file is not suitable with the requirements specified." />
                             <div class="rounded-box w-full h-full flex justify-center mt-1">
-                                <div class="w-full">
-                                    <div v-if="images.length === 0" class="relative w-full bg-muted rounded-2xl flex justify-center items-center cursor-pointer h-96">
-                                        <input type="file" accept="image/*" @change="onFileChange" multiple class="absolute top-0 left-0 w-full h-full rounded-2xl placeholder:hidden text-transparent cursor-pointer" />
-                                        <PlusCircle class="size-14 text-primary" />
+                                <div class="w-full flex justify-center items-center">
+                                    <div v-if="images.length === 0" class="relative w-full bg-muted rounded-2xl flex justify-center items-center h-96">
+                                        <span class="text-2xl text-primary/50 font-semibold">No Image</span>
                                     </div>
 
-                                    <img v-else
-                                        :src="images[selectedIndex].url"
-                                        class="w-full rounded-2xl h-96 object-cover"
-                                    />
+                                    <div v-else>
+                                        <img v-if="!images[selectedIndex].url.startsWith('blob')"
+                                            :src="route('storage.local', {path: images[selectedIndex].url})"
+                                            class="rounded-2xl h-96 object-fill"
+                                        />
+
+                                        <img v-else
+                                            :src="images[selectedIndex].url"
+                                            class="rounded-2xl h-96 object-fill"
+                                        />
+                                    </div>
+
                                 </div>
                             </div>
 
-                            <div v-if="images.length > 0"
-                                class="flex justify-center gap-4 overflow-x-auto scrollbar-hide w-full h-20"
-                            >
+                            <div class="flex justify-center gap-4 overflow-x-auto scrollbar-hide w-full h-20 pt-2">
                                 <Card
                                     v-for="(image, index) in images"
                                     :key="index"
                                     @click="selectImage(index)"
-                                    class="cursor-pointer size-20 rounded-md border justify-center h-full"
+                                    class="relative cursor-pointer size-20 rounded-md flex items-center justify-center h-full overflow-visible p-0.5"
                                     :class="{
-                                        'border-primary/50': selectedIndex === index,
-                                        'border-transparent': selectedIndex !== index
+                                        'border-primary': selectedIndex === index,
+                                        'border-transparent': selectedIndex !== index,
+                                        'border-red-500 border-2': image.invalid,
                                     }"
-                                >
+                                >   
                                     <img
-                                        :src="image.url"
+                                        :key="'image' + index"
+                                        :src="image.url.startsWith('blob:') ? image.url : route('storage.local', {path: image.url})"
                                         :alt="'Thumbnail ' + index"
-                                        class="object-fill rounded hover:opacity-60 transition duration-300"
+                                        class="object-fill rounded hover:opacity-60 transition duration-300 h-full w-fit"
                                     />
                                 </Card>
-
-                                <div v-if="images.length <= 4" class="relative bg-muted rounded-md flex justify-center items-center cursor-pointer h-full size-20">
-                                    <input type="file" accept="image/*" @change="onFileChange" multiple class="absolute top-0 left-0 h-full rounded-md placeholder:hidden text-transparent cursor-pointer" />
-                                    <PlusCircle class="size-7 text-primary" />
-                                </div>
-
-                                <div class="relative bg-muted rounded-md flex justify-center items-center cursor-pointer h-full size-20">
-                                    <input type="file" accept="image/*" @change="reload" multiple class="absolute top-0 left-0 h-full rounded-md placeholder:hidden text-transparent cursor-pointer" />
-                                    <RotateCcw class="size-7 text-primary" />
-                                </div>
                             </div>
                         </div>
                     </div>

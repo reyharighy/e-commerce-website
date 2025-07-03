@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductVariantRequest;
+use App\Http\Requests\Product\UpdateProductVariantImageRequest;
 use App\Http\Requests\Product\UpdateProductVariantRequest;
 use App\Models\Product;
 use App\Models\ProductImage;
@@ -45,7 +46,7 @@ class ProductVariantController extends Controller
 
         $sku = $request->sku . '-' . uniqid();
 
-        $productVariant = ProductVariant::create([
+        $variant = ProductVariant::create([
             'product_id' => $product->id,
             'sku' => $sku,
             'slug' => Str::slug($product->slug . '-' . $sku),
@@ -56,10 +57,10 @@ class ProductVariantController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->storePublicly('images');
+                $path = $image->store('images', 'public');
 
                 ProductImage::create([
-                    'product_variant_id' => $productVariant->id,
+                    'product_variant_id' => $variant->id,
                     'url' => $path,
                 ]);
             }
@@ -81,7 +82,7 @@ class ProductVariantController extends Controller
     {
         return Inertia::render('admin/VariantsEdit', [
             'product' => $product->load('category'),
-            'variant' => $variant->with('productImages'),
+            'variant' => $variant,
             'images' => $variant->productImages,
             'sizeAvailability' => ProductVariant::$sizeAvailability,
             'colorAvailability' => ProductVariant::$colorAvailability,
