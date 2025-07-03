@@ -142,7 +142,7 @@ export interface ProductVariant {
     sku: string;
     slug:string;
     size: string;
-    color:string;
+    color: string;
     stock: number;
     created_at: string;
     updated_at: string;

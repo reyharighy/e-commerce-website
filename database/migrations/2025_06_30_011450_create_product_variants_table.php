@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('sku')->unique();
             $table->string('slug')->unique();
             $table->enum('size', ProductVariant::$sizeAvailability);
-            $table->enum('color', ProductVariant::$colorAvailability)->default('other');
+            $table->enum('color', ProductVariant::$colorAvailability)->default('Not Available');
             $table->unsignedBigInteger('stock')->min(0);
             $table->timestamps();
             $table->softDeletes();

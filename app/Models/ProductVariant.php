@@ -32,6 +32,7 @@ class ProductVariant extends Model
      * Used to get the size availability of the variant.
      */
     static $sizeAvailability = [
+        'Not Available',
         'XXS',
         'XS',
         'S',
@@ -45,7 +46,7 @@ class ProductVariant extends Model
      * Used to get the color availability of the variant.
      */
     static $colorAvailability = [
-        'other',
+        'Not Available',
         'red',
         'orange',
         'amber',

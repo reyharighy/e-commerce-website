@@ -58,13 +58,13 @@ const getInitials = (product: Product) => {
 
     let size = '';
 
-    if (sizeValue.value) {
+    if (sizeValue.value && sizeValue.value !== 'Not Available') {
         size = '-' + sizeValue.value;
     }
 
     let color = '';
 
-    if (colorValue.value) {
+    if (colorValue.value && colorValue.value !== 'Not Available') {
         color = '-' + capitalize(colorValue.value);
     }
 
