@@ -81,7 +81,9 @@ Route::get('product-filter', function () {
 })->middleware(['auth'])->name('product-filter');
 
 Route::get('search-results', function () {
-    return Inertia::render('customer/SearchResults');
+    return Inertia::render('customer/SearchResults', [
+        'product' => Product::all(),
+    ]);
 })->middleware(['auth'])->name('search-results');
 
 Route::get('order-details', function () {

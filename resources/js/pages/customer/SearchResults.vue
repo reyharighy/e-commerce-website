@@ -4,10 +4,15 @@ import ProductCard from '@/components/product/ProductCard.vue'
 import MobileFilterDialog from '@/layouts/product-filter-search/MobileFilterDialog.vue'
 import ProductListHeader from '@/layouts/product-filter-search/ProductListHeader.vue'
 import DesktopFilterSidebar from '@/layouts/product-filter-search/DesktopFilterSidebar.vue'
-import { products } from '@/dummydata/products.js'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Head } from '@inertiajs/vue3'
-import { type BreadcrumbItem } from '@/types'
+import { Product, type BreadcrumbItem } from '@/types'
+
+interface Props {
+    products: Product[];
+}
+
+const props = defineProps<Props>();
 
 // --- BREADCRUMBS ---
 const breadcrumbs: BreadcrumbItem[] = [
@@ -52,10 +57,10 @@ const filters = [
 // Products are first filtered by the search query
 const filteredProducts = computed(() => {
   if (!searchQuery.value) {
-    return products;
+    return props.products;
   }
-  return products.filter(p =>
-    p.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+  return props.products.filter(p =>
+    p.name.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 
