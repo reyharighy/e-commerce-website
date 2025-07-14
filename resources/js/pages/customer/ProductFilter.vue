@@ -4,7 +4,13 @@ import ProductCard from '@/components/product/ProductCard.vue'
 import MobileFilterDialog from '@/layouts/product-filter-search/MobileFilterDialog.vue'
 import ProductListHeader from '@/layouts/product-filter-search/ProductListHeader.vue'
 import DesktopFilterSidebar from '@/layouts/product-filter-search/DesktopFilterSidebar.vue'
-import { products } from '@/dummydata/products.js'
+import { Product } from '@/types'
+
+interface Props {
+    products: Product[];
+}
+
+const props = defineProps<Props>();
 
 const mobileFiltersOpen = ref(false)
 
