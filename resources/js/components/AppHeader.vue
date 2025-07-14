@@ -13,7 +13,7 @@ import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
+import { BookOpen, Heart, LayoutGrid, Menu, Search, ShoppingCart } from 'lucide-vue-next';
 import SearchBar from '@/layouts/product-filter-search/SearchBar.vue';
 
 interface Props {
@@ -43,14 +43,14 @@ const mainNavItems: NavItem[] = [
 
 const rightNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
+        title: 'Cart',
+        href: '#',
+        icon: ShoppingCart,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
+        title: 'Wishlist',
+        href: '#',
+        icon: Heart,
     },
 ];
 
@@ -88,17 +88,15 @@ const mobileSearchOpen = ref(false);
                                     </Link>
                                 </nav>
                                 <div class="flex flex-col space-y-4">
-                                    <a
+                                    <Link
                                         v-for="item in rightNavItems"
                                         :key="item.title"
                                         :href="item.href"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
                                         class="flex items-center space-x-2 text-sm font-medium"
                                     >
                                         <component v-if="item.icon" :is="item.icon" class="h-5 w-5" />
                                         <span>{{ item.title }}</span>
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </SheetContent>
@@ -136,10 +134,10 @@ const mobileSearchOpen = ref(false);
                                 <Tooltip>
                                     <TooltipTrigger>
                                         <Button variant="ghost" size="icon" as-child class="group h-9 w-9 cursor-pointer">
-                                            <a :href="item.href" target="_blank" rel="noopener noreferrer">
+                                            <Link :href="item.href">
                                                 <span class="sr-only">{{ item.title }}</span>
                                                 <component :is="item.icon" class="size-5 opacity-80 group-hover:opacity-100" />
-                                            </a>
+                                            </Link>
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
@@ -158,13 +156,9 @@ const mobileSearchOpen = ref(false);
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
-                                align="end"
                                 class="w-[calc(100vw-2rem)] lg:hidden"
                                 :side-offset="16"
                             >
-                                <div class="p-2">
-                                    <SearchBar @search="(val) => { console.log('Search keyword:', val); mobileSearchOpen = false; }" />
-                                </div>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>

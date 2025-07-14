@@ -19,7 +19,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface Props {
     products: Product[];
-}
+    flashSale: Product[];
+    bestSellers: Product[];
+    topRated: Product[];
+    newArrival: Product[];
+};
 
 const props = defineProps<Props>();
 
@@ -38,8 +42,6 @@ const categories = [
     { name: 'Sweater', image: route('storage.local', {path: 'Featured/Sweater.jpeg'}) },
     { name: 'T-shirt', image: route('storage.local', {path: 'Featured/T-Shirt.jpeg'}) },
 ];
-
-const featuringProducts = ['Flash Sale Today', 'Best Sellers', 'Top Rated', 'New Arrival'];
 
 const searchKeyWords = ref<string>('');
 
@@ -61,18 +63,6 @@ const filteredProducts = computed(() => {
 
         return false;
     });
-});
-
-const getThreeRandomProducts = (products: Product[]) => {
-    const shuffled = [...products].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 3);
-};
-
-const featuredProductsData = computed(() => {
-    return featuringProducts.map(title => ({
-        title,
-        products: getThreeRandomProducts(props.products)
-    }));
 });
 </script>
 
@@ -123,22 +113,65 @@ const featuredProductsData = computed(() => {
             <h2 class="font-bold text-3xl text-primary">Featured Products</h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 w-full">
-                <Card
-                    v-for="(feature, index) in featuredProductsData"
-                    :key="index"
-                    class="space-y-4 p-4 rounded-md border bg-primary-foreground shadow-sm"
-                >
-                    <!-- Feature Title -->
+                <Card class="space-y-4 p-4 rounded-md border bg-primary-foreground shadow-sm">
                     <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">
-                        {{ feature.title }}
+                        Flash Sale
                     </h3>
 
-                    <!-- Top-3 Products -->
                     <div class="space-y-3">
                         <ProductCategoryCard
-                            v-for="product in feature.products"
+                            v-for="product in flashSale"
                             :key="product.id"
                             :product="product"
+                            type-badge="flashSale"
+                            class="hover:cursor-pointer"
+                        />
+                    </div>
+                </Card>
+
+                <Card class="space-y-4 p-4 rounded-md border bg-primary-foreground shadow-sm">
+                    <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">
+                        Best Sellers
+                    </h3>
+
+                    <div class="space-y-3">
+                        <ProductCategoryCard
+                            v-for="product in bestSellers"
+                            :key="product.id"
+                            :product="product"
+                            type-badge="bestSellers"
+                            class="hover:cursor-pointer"
+                        />
+                    </div>
+                </Card>
+
+                <Card class="space-y-4 p-4 rounded-md border bg-primary-foreground shadow-sm">
+                    <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">
+                        Top Rated
+                    </h3>
+
+                    <div class="space-y-3">
+                        <ProductCategoryCard
+                            v-for="product in topRated"
+                            :key="product.id"
+                            :product="product"
+                            type-badge="topRated"
+                            class="hover:cursor-pointer"
+                        />
+                    </div>
+                </Card>
+
+                <Card class="space-y-4 p-4 rounded-md border bg-primary-foreground shadow-sm">
+                    <h3 class="text-sm font-semibold text-primary uppercase tracking-wide mb-2">
+                        New Arrival
+                    </h3>
+
+                    <div class="space-y-3">
+                        <ProductCategoryCard
+                            v-for="product in newArrival"
+                            :key="product.id"
+                            :product="product"
+                            type-badge="newArrival"
                             class="hover:cursor-pointer"
                         />
                     </div>

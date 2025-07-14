@@ -6,9 +6,9 @@
     rating: number
     feedbackCount: number
     title: string
-    sku: string
+    sku?: string
     availability: string
-    brand: string
+    brand?: string
     category: string
     price: string
     oldPrice: string
@@ -30,15 +30,15 @@
 
         <!-- Info Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-600">
-        <div>SKU: <span class="font-medium text-gray-800">{{ sku }}</span></div>
+        <div>Category: <span class="font-medium text-gray-800">{{ category }}</span></div>
         <div>
             Availability:
             <span :class="availability === 'In Stock' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'">
             {{ availability }}
             </span>
         </div>
-        <div>Brand: <span class="font-medium text-gray-800">{{ brand }}</span></div>
-        <div>Category: <span class="font-medium text-gray-800">{{ category }}</span></div>
+        <!-- <div class="text-transparent">Brand: <span class="font-medium text-transparent">{{ brand }}</span></div>
+        <div class="text-transparent">Category: <span class="font-medium text-transparent">{{ category }}</span></div> -->
         </div>
 
         <!-- Price and Tag -->

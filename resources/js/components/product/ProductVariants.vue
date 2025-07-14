@@ -5,7 +5,7 @@
     const dropdownRef = ref<HTMLElement | null>(null)
     const selectedSize = ref<string | null>(null)
 
-    const sizes = ['S', 'M', 'L']
+    const sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
     const toggleDropdown = () => {
     isOpen.value = !isOpen.value
@@ -39,7 +39,7 @@
         <button
         type="button"
         @click="toggleDropdown"
-        class="inline-flex w-full justify-between items-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 transition"
+        class="inline-flex w-full justify-between items-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 transition hover:cursor-pointer"
         :aria-expanded="isOpen"
         aria-haspopup="true"
         >
